@@ -28,6 +28,400 @@
         "A-005",
         "D-002"
       ]
+    },
+    {
+      "id": "C-002",
+      "claim": "JUCE 9 modules, including the pinned 9.0.5 source, are offered under AGPLv3 or a commercial JUCE licence; the project may use AGPL-3.0-only rather than GPL-3.0.",
+      "kind": "policy",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:juce-licensing"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/LICENSE.md",
+          "doi": "",
+          "title": "JUCE 9.0.5 LICENSE.md",
+          "version": "9.0.5",
+          "locator": "lines 1–17",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-001",
+        "A-005"
+      ]
+    },
+    {
+      "id": "C-003",
+      "claim": "JUCE 9.0.5 requires CMake 3.22 or newer.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "tech:cmake",
+        "subject:juce-build"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/CMakeLists.txt",
+          "doi": "",
+          "title": "JUCE 9.0.5 CMakeLists.txt",
+          "version": "9.0.5",
+          "locator": "line 33: cmake_minimum_required(VERSION 3.22)",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-002",
+        "plan/ENVIRONMENT.md"
+      ]
+    },
+    {
+      "id": "C-004",
+      "claim": "In JUCE 9.0.5 the AudioProcessor interface is in juce_audio_processors_headless/processors/juce_AudioProcessor.h, while AudioProcessorValueTreeState remains in juce_audio_processors/utilities; offline DSP code must not include paths assumed from earlier JUCE layouts.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:juce-headless-modules"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/juce-framework/JUCE/tree/d60b7a78030661574a615b586d9325ba7a7fa7dd/modules",
+          "doi": "",
+          "title": "JUCE 9.0.5 module source tree",
+          "version": "9.0.5",
+          "locator": "modules/juce_audio_processors_headless/processors/juce_AudioProcessor.h; modules/juce_audio_processors/utilities/juce_AudioProcessorValueTreeState.h",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-002",
+        "S-DSP",
+        "T-HOST"
+      ]
+    },
+    {
+      "id": "C-005",
+      "claim": "JUCE 9.0.5 CMake supports VST3-only plug-in declaration with IS_SYNTH and NEEDS_MIDI_INPUT, disables VST2 replacement by default with JUCE_VST3_CAN_REPLACE_VST2=0, and provides NEEDS_CURL and NEEDS_WEB_BROWSER controls.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "tech:cmake",
+        "subject:juce-cmake-api"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/extras/Build/CMake/JUCEUtils.cmake",
+          "doi": "",
+          "title": "JUCE 9.0.5 JUCEUtils.cmake",
+          "version": "9.0.5",
+          "locator": "lines 255–270, 1564–1585, 2276–2304, 2465",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-002",
+        "plan/ENVIRONMENT.md",
+        "S-000"
+      ]
+    },
+    {
+      "id": "C-006",
+      "claim": "pluginval v1.0.4 is the latest stable release at tag commit ed19c2c16b57a6d94db391bea3ef4a80b769d5bf; it supports headless VST3 validation, strictness levels 1–10, random seeds, repeated runs, random test order, and explicit sample-rate and block-size lists.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:pluginval",
+        "tech:github-actions"
+      ],
+      "sources": [
+        {
+          "url": "https://api.github.com/repos/Tracktion/pluginval/releases/latest",
+          "doi": "",
+          "title": "pluginval latest release API",
+          "version": "v1.0.4",
+          "locator": "tag_name, prerelease, assets",
+          "accessed": "2026-11-04",
+          "tier": 1
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Tracktion/pluginval/ed19c2c16b57a6d94db391bea3ef4a80b769d5bf/Source/CommandLine.cpp",
+          "doi": "",
+          "title": "pluginval v1.0.4 CommandLine.cpp",
+          "version": "v1.0.4",
+          "locator": "option parser and help text: --strictness-level, --random-seed, --repeat, --randomise, --sample-rates, --block-sizes",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-005",
+        "S-HOST",
+        "T-HOST"
+      ]
+    },
+    {
+      "id": "C-007",
+      "claim": "GitHub-hosted versioned labels ubuntu-24.04 (x64), windows-2025 (x64) and macos-15 (arm64) are supported; moving -latest labels must not be used for the frozen matrix.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:github-actions",
+        "subject:ci-runner-labels"
+      ],
+      "sources": [
+        {
+          "url": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+          "doi": "",
+          "title": "GitHub-hosted runners reference",
+          "version": "2026-11-04",
+          "locator": "Supported runners and hardware resources",
+          "accessed": "2026-11-04",
+          "tier": 1
+        },
+        {
+          "url": "https://github.com/actions/runner-images/issues/14748",
+          "doi": "",
+          "title": "ubuntu-latest migration announcement",
+          "version": "2026-09-17",
+          "locator": "mitigation: specify ubuntu-24.04",
+          "accessed": "2026-11-04",
+          "tier": 2
+        }
+      ],
+      "confidence": "corroborated",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-006",
+        "S-CI",
+        "plan/TRACEABILITY.md"
+      ]
+    },
+    {
+      "id": "C-008",
+      "claim": "Extended Karplus–Strong/digital-waveguide string models provide an established basis for efficient plucked-string synthesis, including plucking-style and sympathetic-string extensions.",
+      "kind": "bibliographic",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:digital-waveguide-strings"
+      ],
+      "sources": [
+        {
+          "url": "https://research.aalto.fi/en/publications/plucked-string-models-from-the-karplus-strong-algorithm-to-digita/",
+          "doi": "10.2307/3681155",
+          "title": "Plucked-string models: from the Karplus–Strong algorithm to digital waveguides and beyond",
+          "version": "1998",
+          "locator": "Computer Music Journal 22(3), 17–32",
+          "accessed": "2026-11-04",
+          "tier": 1
+        },
+        {
+          "url": "http://users.spa.aalto.fi/vpv/publications/cmj98.htm",
+          "doi": "",
+          "title": "Author-maintained CMJ98 article page",
+          "version": "1998",
+          "locator": "abstract and article aims",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "corroborated",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-004",
+        "S-DSP",
+        "T-DSP"
+      ]
+    },
+    {
+      "id": "C-009",
+      "claim": "Slap synthesis has established digital-waveguide prior art using explicit string–fingerboard collision models; nonlinear scattering junctions avoid the split-string output discontinuity reported for the earlier Rank–Kubin approach.",
+      "kind": "bibliographic",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:string-fingerboard-collision"
+      ],
+      "sources": [
+        {
+          "url": "https://www.diva-portal.org/smash/get/diva2:316228/FULLTEXT01.pdf",
+          "doi": "10.1109/TASL.2009.2038822",
+          "title": "Player–Instrument Interaction Models for Digital Waveguide Synthesis of Guitar: Touch and Collisions",
+          "version": "2010",
+          "locator": "pp. 822–832; Sections III and IV-C; equations (26)–(39)",
+          "accessed": "2026-11-04",
+          "tier": 1
+        },
+        {
+          "url": "https://dl.acm.org/doi/10.5555/1820680.1820691",
+          "doi": "",
+          "title": "Player-instrument interaction models bibliographic record and references",
+          "version": "2010",
+          "locator": "reference [9]: Rank and Kubin, ICASSP 1997, vol. 1, pp. 443–446",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "corroborated",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-004",
+        "S-SLAP-SPIKE",
+        "T-SLAP"
+      ]
+    },
+    {
+      "id": "C-010",
+      "claim": "Upright slap-bass performance has at least two acoustically distinct output sources: fingerboard/contact sound for the slap and F-hole radiation for the pitched component.",
+      "kind": "bibliographic",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:upright-slap-bass-acoustics"
+      ],
+      "sources": [
+        {
+          "url": "https://www.donovanstokes.com/wp-content/uploads/April-08-ISB-Rockabilly-Bass.pdf",
+          "doi": "",
+          "title": "Rockabilly Bass: Amplification/Recording for Slap-Style playing",
+          "version": "2008",
+          "locator": "section headed Amplification/Recording for Slap-Style playing",
+          "accessed": "2026-11-04",
+          "tier": 4
+        }
+      ],
+      "confidence": "single-source",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-004",
+        "S-DSP",
+        "S-LISTEN"
+      ]
+    },
+    {
+      "id": "C-011",
+      "claim": "VSCO 2 CE at commit 440300901dfe9275fd84e0b7763af1f8443ae62e is CC0 and its Solo Contrabass/Pizz files are raw 44.1 kHz stereo 16-bit WAV recordings; seven pinned candidates were downloaded and SHA-256 hashed successfully.",
+      "kind": "policy",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:vsco-contrabass-reference"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e",
+          "doi": "",
+          "title": "VSCO 2 CE pinned source repository",
+          "version": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+          "locator": "LICENSE; Strings/Solo Contrabass/Pizz",
+          "accessed": "2026-11-04",
+          "tier": 1
+        },
+        {
+          "url": "research/reference-candidates/manifest.json",
+          "doi": "",
+          "title": "Local candidate download and hash manifest",
+          "version": "2026-11-04",
+          "locator": "seven file names, byte counts and SHA-256 values",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-070",
+        "S-LISTEN",
+        "T-REF"
+      ]
+    },
+    {
+      "id": "C-012",
+      "claim": "The selected VSCO files are labelled Pizz and are suitable only as ordinary pluck/body references; their filename taxonomy provides no evidence of psychobilly slap technique, so slap realism must use demos-only assessment unless a separate slap reference is verified.",
+      "kind": "bibliographic",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:slap-reference-coverage"
+      ],
+      "sources": [
+        {
+          "url": "https://api.github.com/repos/sgossner/VSCO-2-CE/contents/Strings/Solo%20Contrabass/Pizz?ref=440300901dfe9275fd84e0b7763af1f8443ae62e",
+          "doi": "",
+          "title": "VSCO Solo Contrabass Pizz directory at pinned commit",
+          "version": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+          "locator": "file names BKCtbss_Pizz_*",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-070",
+        "D-071",
+        "S-LISTEN",
+        "G-LISTEN"
+      ]
+    },
+    {
+      "id": "C-013",
+      "claim": "Exploratory FFT analysis of the seven VSCO candidates found the strongest 20–300 Hz spectral peak at the second harmonic for every selected file; a spectral-maximum shortcut is therefore not a validated pitch estimator for this reference set.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:reference-pitch-analysis"
+      ],
+      "sources": [
+        {
+          "url": "research/reference-candidates/analysis.json",
+          "doi": "",
+          "title": "Local exploratory reference analysis",
+          "version": "2026-11-04",
+          "locator": "fft_peak_20_300Hz values compared with filename pitches",
+          "accessed": "2026-11-04",
+          "tier": 1
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "T-ANALYSER",
+        "S-ANALYSER-SPIKE"
+      ]
     }
   ]
 }

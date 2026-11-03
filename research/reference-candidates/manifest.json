@@ -1,0 +1,100 @@
+[
+  {
+    "file": "BKCtbss_Pizz_A1_v1_rr1.wav",
+    "bytes": 623260,
+    "sha256": "c88e632ac4f716d4e85112d6ea5bbe2d27d67019296787c25d27178a9e5f18ac",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_A1_v1_rr1.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 3.5326303854875283
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_A1_v1_rr2.wav",
+    "bytes": 485472,
+    "sha256": "e7aaefac5eb3986fcec86040e1f7310e84ea38be5d13abe2b3de101c41f43b2b",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_A1_v1_rr2.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 2.751519274376417
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_F#0_v1_rr1.wav",
+    "bytes": 256360,
+    "sha256": "8d1337d6ba2b8e65e52d0623df7afa66b4b8d1863116cc6f798f629b7e27634b",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_F%230_v1_rr1.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 1.4526984126984126
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_F#0_v3_rr1.wav",
+    "bytes": 828940,
+    "sha256": "4bfdab1976e121136ab5d0bfb1e4b79523d5b0c7adf0d35704c98f5cb26713d1",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_F%230_v3_rr1.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 4.698616780045351
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_F#0_v3_rr2.wav",
+    "bytes": 910664,
+    "sha256": "e50e59367b9b6707dbb28f97834e1d9bceabc233c5c86d3a61e8af2f5dedaaf4",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_F%230_v3_rr2.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 5.161904761904762
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_G#2_v1_rr1.wav",
+    "bytes": 376048,
+    "sha256": "f5d495c2184e6dacec7783719fbe3f6c1254995abb95ccf307026ef3dd7d5439",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_G%232_v1_rr1.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 2.131201814058957
+    }
+  },
+  {
+    "file": "BKCtbss_Pizz_G#2_v1_rr2.wav",
+    "bytes": 273224,
+    "sha256": "a3a5250bc7f561670cd429b0c72ae3b3f3de575d887c69cee48cc7f587be206e",
+    "source_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/Strings/Solo%20Contrabass/Pizz/BKCtbss_Pizz_G%232_v1_rr2.wav",
+    "repository_commit": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+    "licence": "CC0-1.0",
+    "format": {
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 1.5482993197278911
+    }
+  }
+]

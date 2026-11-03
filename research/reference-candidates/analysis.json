@@ -1,0 +1,83 @@
+{
+  "purpose": "Exploratory descriptors only; not realism thresholds. FFT peak is deliberately not labelled f0.",
+  "method": "scipy.io.wavfile; mono channel mean; 32768-sample Hann window beginning 80 ms after -40 dB onset; strongest FFT bin in 20\u2013300 Hz.",
+  "records": [
+    {
+      "file": "BKCtbss_Pizz_A1_v1_rr1.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 3.5326303854875283,
+      "peak_dbfs": -24.417204838801542,
+      "rms_dbfs": -43.971297823483,
+      "onset_-40dB_s": 0.00031746031746031746,
+      "fft_peak_20_300Hz": 113.04931640625
+    },
+    {
+      "file": "BKCtbss_Pizz_A1_v1_rr2.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 2.751519274376417,
+      "peak_dbfs": -24.75196696279303,
+      "rms_dbfs": -43.113119593988785,
+      "onset_-40dB_s": 0.0004308390022675737,
+      "fft_peak_20_300Hz": 111.7034912109375
+    },
+    {
+      "file": "BKCtbss_Pizz_F#0_v1_rr1.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 1.4526984126984126,
+      "peak_dbfs": -45.42319120679713,
+      "rms_dbfs": -59.373459364684706,
+      "onset_-40dB_s": 0.00024943310657596373,
+      "fft_peak_20_300Hz": 91.51611328125
+    },
+    {
+      "file": "BKCtbss_Pizz_F#0_v3_rr1.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 4.698616780045351,
+      "peak_dbfs": -26.81881523532799,
+      "rms_dbfs": -46.40096076999604,
+      "onset_-40dB_s": 0.00024943310657596373,
+      "fft_peak_20_300Hz": 91.51611328125
+    },
+    {
+      "file": "BKCtbss_Pizz_F#0_v3_rr2.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 5.161904761904762,
+      "peak_dbfs": -25.91442410572396,
+      "rms_dbfs": -44.65545103676095,
+      "onset_-40dB_s": 0.00040816326530612246,
+      "fft_peak_20_300Hz": 91.51611328125
+    },
+    {
+      "file": "BKCtbss_Pizz_G#2_v1_rr1.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 2.131201814058957,
+      "peak_dbfs": -34.82569644373977,
+      "rms_dbfs": -52.75016161221917,
+      "onset_-40dB_s": 0.0004988662131519275,
+      "fft_peak_20_300Hz": 204.5654296875
+    },
+    {
+      "file": "BKCtbss_Pizz_G#2_v1_rr2.wav",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bit_depth": 16,
+      "duration_s": 1.5482993197278911,
+      "peak_dbfs": -34.84763975554873,
+      "rms_dbfs": -50.79361221693631,
+      "onset_-40dB_s": 0.0007482993197278912,
+      "fft_peak_20_300Hz": 205.9112548828125
+    }
+  ]
+}
