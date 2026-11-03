@@ -27,3 +27,14 @@
 - **Q-R03 — Quantitative gates:** Which onset, pitch, decay, spectral and slap-transient metrics are measurable on both reference and candidate, and what thresholds are supported by reference spread plus planning spikes? Informs T-110–T-119.
 - **Q-R04 — Listening design:** Which 12 matched pairs, start-window cuts, seed rule, demos and weak-spot questions test realism rather than only steady state? Informs G-004 and S-LISTEN.
 - **Q-R05 — Fallback:** If no suitable slap reference can be redistributed, what lawful comparison still provides useful evidence without pretending that an ordinary pizzicato reference validates slap realism? Informs D-071 and the gate definition.
+
+## R3 gap leaves
+
+- **Q-E09 — Reproducible CI dependencies:** Which immutable action SHAs, pluginval archive URLs and SHA-256 hashes, CMake binary and Python package pins can be installed with verified commands? Informs `plan/ENVIRONMENT.md` and S-CI.
+- **Q-E10 — Headless/editor behaviour:** Which JUCE editor choice and display arrangement permit host validation on headless CI without skipping meaningful coverage? Informs D-011 and the CI workflow.
+- **Q-E11 — Public data contracts:** What exact parameter IDs/ranges/defaults, state schema, bus layout, voice-stealing rule and offline event schema remove implementation judgment calls? Informs D-010–D-019/D-030–D-033 and frozen tests.
+- **Q-A07 — Collision stability:** Does the candidate contact model remain finite and click-controlled across 44.1–96 kHz, extreme controls and repeated collisions? Informs D-048 and T-080–T-089.
+- **Q-A08 — Coupling and voice lifecycle:** How are sympathetic coupling, retrigger and voice stealing bounded so eight voices cannot cause unbounded feedback, allocation or abrupt cuts? Informs D-021–D-024/D-046.
+- **Q-A09 — Analyser correctness:** Do pitch, onset, decay and spectral metrics pass known-answer synthetic tests, including second-harmonic-dominant tones? Informs T-ANALYSER and all numeric realism gates.
+- **Q-R06 — Attainable thresholds:** What candidate-versus-reference spread is actually attainable across at least three notes and three dynamics before numeric thresholds freeze? Informs T-110–T-119.
+- **Q-R07 — Partial-coverage listening score:** How do 12 pluck/body blind pairs and demos-only slap questions combine into one honest gate with qualitative override and a three-round limit? Informs G-004 and S-LISTEN.
