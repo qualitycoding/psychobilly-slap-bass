@@ -1,0 +1,33 @@
+{
+  "claims": [
+    {
+      "id": "C-001",
+      "claim": "JUCE 9.0.5 is a stable release at tag commit d60b7a78030661574a615b586d9325ba7a7fa7dd.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:juce-versioning"
+      ],
+      "sources": [
+        {
+          "url": "https://api.github.com/repos/juce-framework/JUCE/releases/latest",
+          "doi": "",
+          "title": "JUCE 9.0.5 release API record",
+          "version": "9.0.5",
+          "locator": "tag_name, target_commitish, published_at, prerelease",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "GitHub/JUCE"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "A-005",
+        "D-002"
+      ]
+    }
+  ]
+}
