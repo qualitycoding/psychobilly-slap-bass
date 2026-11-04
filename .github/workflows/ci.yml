@@ -86,16 +86,21 @@ jobs:
         run: |
           exe=$(find build -type f \( -name 'psychobilly-render' -o -name 'psychobilly-render.exe' \) | head -1)
           echo "exe: $exe"
-          if ! out=$("$exe" --probe 2>&1); then
-            rc=$?
-            echo "probe failed (exit $rc); output: [$out]"
+          set +e
+          "$exe" --probe > /tmp/psb-probe.out 2>&1
+          rc=$?
+          set -e
+          echo "probe rc=$rc"
+          head -c 1000 /tmp/psb-probe.out || true
+          if [ "$rc" != "0" ]; then
             if [ "$RUNNER_OS" = "Windows" ]; then
               echo "== linked DLLs =="
               objdump -p "$exe" 2>/dev/null | grep 'DLL Name' || true
+              echo "== run via cmd for native error =="
+              cmd //c "$(cygpath -w "$exe") --probe" || true
             fi
             exit "$rc"
           fi
-          echo "$out" | head -20
 
       - name: CTest (probe + demo smoke)
         shell: bash

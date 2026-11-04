@@ -254,39 +254,44 @@ std::string hardwareString() {
 }
 
 int runProbe() {
-    std::cout << "{\n  \"parameters\": {";
+    std::ostringstream o;
+    o << "{\n  \"parameters\": {";
     for (int i = 0; i < psb::kParamCount; ++i) {
-        if (i) std::cout << ",";
-        std::cout << "\"" << psb::kParamIds[static_cast<std::size_t>(i)] << "\":"
-                  << "{\"minimum\":0.0,\"maximum\":1.0,\"default\":"
-                  << psb::kParamDefaults[static_cast<std::size_t>(i)] << "}";
+        if (i) o << ",";
+        o << "\"" << psb::kParamIds[static_cast<std::size_t>(i)] << "\":"
+          << "{\"minimum\":0.0,\"maximum\":1.0,\"default\":"
+          << psb::kParamDefaults[static_cast<std::size_t>(i)] << "}";
     }
-    std::cout << "},\n"
-              << "  \"format\": \"VST3\",\n"
-              << "  \"name\": \"Psychobilly Slap Bass\",\n"
-              << "  \"manufacturer\": \"QualityCoding\",\n"
-              << "  \"version\": \"0.1.0\",\n"
-              << "  \"plugin_code\": \"Psb1\",\n"
-              << "  \"bundle_id\": \"com.qualitycoding.psychobillyslapbass\",\n"
-              << "  \"is_synth\": true,\n"
-              << "  \"accepts_midi\": true,\n"
-              << "  \"produces_midi\": false,\n"
-              << "  \"input_channels\": 0,\n"
-              << "  \"output_channels\": 2,\n"
-              << "  \"has_editor\": false,\n"
-              << "  \"create_editor\": null,\n"
-              << "  \"midi_channels\": \"omni\",\n"
-              << "  \"pitch_bend_semitones\": 2.0,\n"
-              << "  \"pitch_bend_center\": 8192,\n"
-              << "  \"note_on_zero_is_note_off\": true,\n"
-              << "  \"mpe_enabled\": false\n"
-              << "}\n";
+    o << "},\n"
+      << "  \"format\": \"VST3\",\n"
+      << "  \"name\": \"Psychobilly Slap Bass\",\n"
+      << "  \"manufacturer\": \"QualityCoding\",\n"
+      << "  \"version\": \"0.1.0\",\n"
+      << "  \"plugin_code\": \"Psb1\",\n"
+      << "  \"bundle_id\": \"com.qualitycoding.psychobillyslapbass\",\n"
+      << "  \"is_synth\": true,\n"
+      << "  \"accepts_midi\": true,\n"
+      << "  \"produces_midi\": false,\n"
+      << "  \"input_channels\": 0,\n"
+      << "  \"output_channels\": 2,\n"
+      << "  \"has_editor\": false,\n"
+      << "  \"create_editor\": null,\n"
+      << "  \"midi_channels\": \"omni\",\n"
+      << "  \"pitch_bend_semitones\": 2.0,\n"
+      << "  \"pitch_bend_center\": 8192,\n"
+      << "  \"note_on_zero_is_note_off\": true,\n"
+      << "  \"mpe_enabled\": false\n"
+      << "}\n";
+    const std::string s = o.str();
+    std::fwrite(s.data(), 1, s.size(), stdout);
+    std::fflush(stdout);
     return 0;
 }
 
 } // namespace
 
 int main(int argc, char** argv) {
+    std::fprintf(stderr, "psb-render: main-enter argc=%d\n", argc);
     std::string inputPath, outputPath, metadataPath, componentsDir, rawPath;
     bool probe = false, lifecycle = false;
     for (int i = 1; i < argc; ++i) {
