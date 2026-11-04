@@ -84,7 +84,7 @@ jobs:
       - name: Renderer direct smoke (captures crash output on all OSes)
         shell: bash
         run: |
-          exe=$(find build -name 'psychobilly-render*' -type f ! -name '*.pdb' | head -1)
+          exe=$(find build -type f \( -name 'psychobilly-render' -o -name 'psychobilly-render.exe' \) | head -1)
           echo "exe: $exe"
           "$exe" --probe
 
@@ -133,7 +133,7 @@ jobs:
           curl -fsSL --retry 5 -o pluginval.zip "$url"
           actual=$(sha256sum pluginval.zip | cut -d' ' -f1)
           [ "$actual" = "$expect" ] || { echo "pluginval hash mismatch"; exit 1; }
-          [ "$(stat -c %s pluginval.zip)" = "$bytes" ] || { echo "pluginval byte count mismatch"; exit 1; }
+          [ "$(wc -c < pluginval.zip | tr -d " \t")" = "$bytes" ] || { echo "pluginval byte count mismatch"; exit 1; }
           unzip -o pluginval.zip -d pluginval-dist
 
       - name: pluginval primary validation (D-014)
@@ -165,14 +165,14 @@ jobs:
           from pathlib import Path
           log = Path("artifacts/pluginval/pluginval-primary.log").read_text(errors="ignore")
           problems = []
-          if "Test finished" not in log and "All tests completed" not in log and "finished" not in log.lower():
+          if "Time taken to run all tests" not in log and "All tests completed" not in log and "finished" not in log.lower():
               problems.append("no completion marker")
           for token in ("fail", "error"):
               for line in log.splitlines():
                   if re.search(rf"\b{token}s?\b", line, re.I) and "0 " not in line and "Pass" not in line:
                       if "failed" in line.lower() or "error" in line.lower():
                           problems.append(line.strip()[:160])
-          for family in ("PluginInfoTest", "PluginStateTest", "BusTest", "AutomationTest"):
+          for family in ("Plugin info", "Plugin state", "Basic bus", "Automation"):
               if family not in log:
                   problems.append(f"missing test family: {family}")
           for token in ("44100", "48000", "88200", "96000", "64", "128", "256", "512", "1024"):
@@ -224,7 +224,7 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev libfreetype6-dev libfontconfig1-dev libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev libgl1-mesa-dev libcurl4-openssl-dev
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev libfreetype6-dev libfontconfig1-dev libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev libxi-dev libxrender-dev libxfixes-dev libgl1-mesa-dev libcurl4-openssl-dev
       - name: Install CMake 3.22.4
         run: python -m pip install --index-url https://pypi.org/simple "cmake==3.22.4"
       - name: Configure/build with CMake 3.22.4
