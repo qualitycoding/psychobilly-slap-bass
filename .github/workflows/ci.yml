@@ -86,23 +86,19 @@ jobs:
         shell: bash
         run: |
           set +e
-          echo "== trivial console exe via CMake =="
-          mkdir -p /tmp/hello && cd /tmp/hello
-          printf 'int main(){return 0;}\n' > hello.cpp
-          cmake -S . -B b > /dev/null 2>&1 || { echo cmake-config-failed; }
-          printf 'cmake_minimum_required(VERSION 3.22)\nproject(hello CXX)\nadd_executable(hello hello.cpp)\n' > CMakeLists.txt
-          cmake -S . -B b 2>&1 | tail -2
-          cmake --build b --config Release 2>&1 | tail -2
-          ./b/Release/hello.exe; echo "hello rc=$?"
-          echo "== compile our TU directly with cl =="
-          cd "$GITHUB_WORKSPACE"
           exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
-          cl //std:c++20 //O2 //MT //EHsc //Isrc //Fo:/tmp/psb-cl.obj //Fe:/tmp/psb-cl.exe src/psychobilly_render.cpp 2>&1 | tail -3
-          /tmp/psb-cl.exe --probe > /tmp/cl-probe.out 2>&1; echo "cl-exe rc=$?"
-          head -c 300 /tmp/cl-probe.out
-          echo "== cmake-built exe again =="
-          "$exe" --probe > /tmp/probe2.out 2>&1; echo "cmake-exe rc=$?"
-          head -c 300 /tmp/probe2.out
+          echo "== true exit code via powershell =="
+          pwsh -NoProfile -Command "$p = Start-Process -FilePath '$PWD/$exe' -ArgumentList '--probe' -Wait -PassThru -RedirectStandardOutput $env:TEMP\\psb-ps.out -RedirectStandardError $env:TEMP\\psb-pserr.out; 'powershell-exitcode=' + $p.ExitCode"
+          head -c 300 "$TEMP/psb-ps.out" 2>/dev/null || head -c 300 /c/Users/RUNNER~1/AppData/Local/Temp/psb-ps.out 2>/dev/null || true
+          echo
+          echo "== standalone build of same TU, /MD =="
+          mkdir -p /tmp/psbtest-md && printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbtest CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(psbtest-render "$GITHUB_WORKSPACE/src/psychobilly_render.cpp")" "target_include_directories(psbtest-render PRIVATE "$GITHUB_WORKSPACE/src")" 'target_compile_definitions(psbtest-render PRIVATE PSB_GIT_COMMIT="diag")' > /tmp/psbtest-md/CMakeLists.txt
+          cmake -S /tmp/psbtest-md -B /tmp/psbtest-md/b > /dev/null && cmake --build /tmp/psbtest-md/b --config Release 2>&1 | tail -1
+          /tmp/psbtest-md/b/Release/psbtest-render.exe --probe > /tmp/md.out 2>&1; echo "md rc=$?"; head -c 200 /tmp/md.out
+          echo "== standalone build of same TU, /MT =="
+          mkdir -p /tmp/psbtest-mt && cp /tmp/psbtest-md/CMakeLists.txt /tmp/psbtest-mt/
+          cmake -S /tmp/psbtest-mt -B /tmp/psbtest-mt/b -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded > /dev/null && cmake --build /tmp/psbtest-mt/b --config Release 2>&1 | tail -1
+          /tmp/psbtest-mt/b/Release/psbtest-render.exe --probe > /tmp/mt.out 2>&1; echo "mt rc=$?"; head -c 200 /tmp/mt.out
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
