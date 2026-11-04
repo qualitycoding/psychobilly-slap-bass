@@ -95,7 +95,9 @@
     "knowledge/K-20261104T011200Z-eight-control-mapping-results.md": "544b25f7d874f4676294dbadf64af5bc0b21ddd1c11688ac436897600a5fe38e",
     "knowledge/K-20261104T011300Z-eight-voice-lifecycle-results.md": "6244a4ccdf40a68a84273a8e6035c6f6afd663f18cf20a28520a288f9ca34c0f",
     "knowledge/K-20261104T011400Z-reference-spread-not-realism.md": "66c3f74e69e9b656f0e41eb9fb3341d4656e80ab4756189d5119a9ba8b750961",
-    "knowledge/K-20261104T011500Z-native-eight-voice-performance.md": "a53dc05d8e0418392dcd6a156648206534cbe87c72a35269e285d16ecc83fb8e"
+    "knowledge/K-20261104T011500Z-native-eight-voice-performance.md": "a53dc05d8e0418392dcd6a156648206534cbe87c72a35269e285d16ecc83fb8e",
+    ".gitignore": "c01dc1ac1d9b7278d33ffd0278ab66aadb4f70ea39fe20529e454d634d1a6169",
+    "lessons/L-20261104T011700Z-generated-python-cache-staged.md": "e6a196a9c835adb173ec220f025b0e3c422800996eda6193ac432cd1cbed5c42"
   },
   "execution_context": {
     "current_objective": "Produce a zero-question software+audio implementation plan for a JUCE 9 psychobilly slap-double-bass VST3.",
@@ -290,7 +292,8 @@
     "L-20261104T000900Z-stale-git-index-lock-after-mount-error",
     "L-20261104T004000Z-configured-package-index-unreachable",
     "L-20261104T004100Z-cmake-package-needs-data-and-exec-bits",
-    "L-20261104T010000Z-spike-workload-exceeded-call-lifetime"
+    "L-20261104T010000Z-spike-workload-exceeded-call-lifetime",
+    "L-20261104T011700Z-generated-python-cache-staged"
   ],
   "knowledge_added": [
     "K-20261104T003002Z-juce-9-agpl-commercial-license",
