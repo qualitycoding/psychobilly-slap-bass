@@ -44,7 +44,7 @@
           "doi": "",
           "title": "JUCE 9.0.5 LICENSE.md",
           "version": "9.0.5",
-          "locator": "lines 1–17",
+          "locator": "lines 1\u201317",
           "accessed": "2026-11-04",
           "tier": 1
         }
@@ -131,7 +131,7 @@
           "doi": "",
           "title": "JUCE 9.0.5 JUCEUtils.cmake",
           "version": "9.0.5",
-          "locator": "lines 255–270, 1564–1585, 2276–2304, 2465",
+          "locator": "lines 255\u2013270, 1564\u20131585, 2276\u20132304, 2465",
           "accessed": "2026-11-04",
           "tier": 1
         }
@@ -147,7 +147,7 @@
     },
     {
       "id": "C-006",
-      "claim": "pluginval v1.0.4 is the latest stable release at tag commit ed19c2c16b57a6d94db391bea3ef4a80b769d5bf; it supports headless VST3 validation, strictness levels 1–10, random seeds, repeated runs, random test order, and explicit sample-rate and block-size lists.",
+      "claim": "pluginval v1.0.4 is the latest stable release at tag commit ed19c2c16b57a6d94db391bea3ef4a80b769d5bf; it supports headless VST3 validation, strictness levels 1\u201310, random seeds, repeated runs, random test order, and explicit sample-rate and block-size lists.",
       "kind": "software",
       "load_bearing": true,
       "tags": [
@@ -224,7 +224,7 @@
     },
     {
       "id": "C-008",
-      "claim": "Extended Karplus–Strong/digital-waveguide string models provide an established basis for efficient plucked-string synthesis, including plucking-style and sympathetic-string extensions.",
+      "claim": "Extended Karplus\u2013Strong/digital-waveguide string models provide an established basis for efficient plucked-string synthesis, including plucking-style and sympathetic-string extensions.",
       "kind": "bibliographic",
       "load_bearing": true,
       "tags": [
@@ -235,9 +235,9 @@
         {
           "url": "https://research.aalto.fi/en/publications/plucked-string-models-from-the-karplus-strong-algorithm-to-digita/",
           "doi": "10.2307/3681155",
-          "title": "Plucked-string models: from the Karplus–Strong algorithm to digital waveguides and beyond",
+          "title": "Plucked-string models: from the Karplus\u2013Strong algorithm to digital waveguides and beyond",
           "version": "1998",
-          "locator": "Computer Music Journal 22(3), 17–32",
+          "locator": "Computer Music Journal 22(3), 17\u201332",
           "accessed": "2026-11-04",
           "tier": 1
         },
@@ -262,7 +262,7 @@
     },
     {
       "id": "C-009",
-      "claim": "Slap synthesis has established digital-waveguide prior art using explicit string–fingerboard collision models; nonlinear scattering junctions avoid the split-string output discontinuity reported for the earlier Rank–Kubin approach.",
+      "claim": "Slap synthesis has established digital-waveguide prior art using explicit string\u2013fingerboard collision models; nonlinear scattering junctions avoid the split-string output discontinuity reported for the earlier Rank\u2013Kubin approach.",
       "kind": "bibliographic",
       "load_bearing": true,
       "tags": [
@@ -273,9 +273,9 @@
         {
           "url": "https://www.diva-portal.org/smash/get/diva2:316228/FULLTEXT01.pdf",
           "doi": "10.1109/TASL.2009.2038822",
-          "title": "Player–Instrument Interaction Models for Digital Waveguide Synthesis of Guitar: Touch and Collisions",
+          "title": "Player\u2013Instrument Interaction Models for Digital Waveguide Synthesis of Guitar: Touch and Collisions",
           "version": "2010",
-          "locator": "pp. 822–832; Sections III and IV-C; equations (26)–(39)",
+          "locator": "pp. 822\u2013832; Sections III and IV-C; equations (26)\u2013(39)",
           "accessed": "2026-11-04",
           "tier": 1
         },
@@ -284,7 +284,7 @@
           "doi": "",
           "title": "Player-instrument interaction models bibliographic record and references",
           "version": "2010",
-          "locator": "reference [9]: Rank and Kubin, ICASSP 1997, vol. 1, pp. 443–446",
+          "locator": "reference [9]: Rank and Kubin, ICASSP 1997, vol. 1, pp. 443\u2013446",
           "accessed": "2026-11-04",
           "tier": 1
         }
@@ -395,7 +395,7 @@
     },
     {
       "id": "C-013",
-      "claim": "Exploratory FFT analysis of the seven VSCO candidates found the strongest 20–300 Hz spectral peak at the second harmonic for every selected file; a spectral-maximum shortcut is therefore not a validated pitch estimator for this reference set.",
+      "claim": "Exploratory FFT analysis of the seven VSCO candidates found the strongest 20\u2013300 Hz spectral peak at the second harmonic for every selected file; a spectral-maximum shortcut is therefore not a validated pitch estimator for this reference set.",
       "kind": "numerical",
       "load_bearing": true,
       "tags": [
@@ -527,7 +527,7 @@
           "doi": "",
           "title": "JUCE 9.0.5 AudioProcessor.h",
           "version": "9.0.5",
-          "locator": "lines 65–83, 221, 292, 1006–1034, 1149–1204, 1403–1415 and 1432",
+          "locator": "lines 65\u201383, 221, 292, 1006\u20131034, 1149\u20131204, 1403\u20131415 and 1432",
           "accessed": "2026-11-04",
           "tier": 1,
           "publisher": "JUCE"
@@ -557,7 +557,7 @@
           "doi": "",
           "title": "JUCE 9.0.5 AudioProcessorValueTreeState.h",
           "version": "9.0.5",
-          "locator": "lines 340–346 and 378–404",
+          "locator": "lines 340\u2013346 and 378\u2013404",
           "accessed": "2026-11-04",
           "tier": 1,
           "publisher": "JUCE"
@@ -567,7 +567,7 @@
           "doi": "",
           "title": "JUCE 9.0.5 AudioProcessorValueTreeState.cpp",
           "version": "9.0.5",
-          "locator": "lines 381–403: atomic adapter access and ScopedLock in copyState/replaceState",
+          "locator": "lines 381\u2013403: atomic adapter access and ScopedLock in copyState/replaceState",
           "accessed": "2026-11-04",
           "tier": 1,
           "publisher": "JUCE"
@@ -698,7 +698,7 @@
           "doi": "",
           "title": "pluginval v1.0.4 PluginTests.cpp",
           "version": "v1.0.4",
-          "locator": "lines 174–190: strictness, requiresGUI and disabledTests continue paths",
+          "locator": "lines 174\u2013190: strictness, requiresGUI and disabledTests continue paths",
           "accessed": "2026-11-04",
           "tier": 1,
           "publisher": "Tracktion source"
@@ -918,6 +918,36 @@
       "informs": [
         "D-018",
         "T-PERFORMANCE"
+      ]
+    },
+    {
+      "id": "C-029",
+      "claim": "pip-audit 2.10.0 exists for Python 3.10+ and documents --no-deps, --disable-pip, --strict, --format json and --output for a fully pinned requirements audit.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:python",
+        "subject:dependency-security",
+        "phase:verification"
+      ],
+      "sources": [
+        {
+          "url": "https://pypi.org/pypi/pip-audit/2.10.0/json",
+          "doi": "",
+          "title": "PyPI pip-audit 2.10.0 metadata and documentation",
+          "version": "2.10.0",
+          "locator": "info.requires_python and embedded usage documentation",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Python Package Index / PyPA"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "plan/ENVIRONMENT.md",
+        "S-090"
       ]
     }
   ]

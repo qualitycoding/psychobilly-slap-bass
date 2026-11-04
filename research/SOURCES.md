@@ -39,3 +39,5 @@ Accessed 2026-11-04 unless stated otherwise. Claim IDs provide the machine-reada
 27. **R6 DSP spike source and output** — `research/spikes/dsp/dsp_spike.py` and `research/spikes/dsp/dsp-output.json` — 54 architecture runs, 162 extreme-control runs, known-answer analysis, eight control sweeps, voice/coupling lifecycle, seven references and nine candidate records; deterministic rerun SHA-256 `2386d34ff68f85fc21821d65e20822753b39a56e53dce52e0e1b91008d9de211`. C-023–C-027.
 28. **R6 native performance spike** — `research/spikes/performance/perf_spike.cpp` and `research/spikes/performance/perf-output.json` — seven five-second, eight-voice runs at 96 kHz/64 samples with g++ 12.2.0. C-028.
 29. **Audio blind-listening protocol** — `qualitycoding/skills/skills/audio-blind-listening-validation/SKILL.md` — fixed pair construction, seed disclosure, side-bias findings, demos, human gate and three-round limit; D-015 and S-LISTEN.
+
+30. **pip-audit 2.10.0 PyPI metadata and pinned documentation** — https://pypi.org/pypi/pip-audit/2.10.0/json — release existence, Python requirement and exact strict/no-resolution/JSON/output flags used by S-090. C-029.
