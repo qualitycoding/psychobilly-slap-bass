@@ -1,7 +1,7 @@
 {
   "run_id": "20261103T230504Z-psychobilly-slap-bass",
   "branch": "gen-20261103T230504Z-psychobilly-slap-bass",
-  "sequence": 5,
+  "sequence": 6,
   "profiles": [
     "software"
   ],
@@ -11,9 +11,9 @@
     "courseware": false
   },
   "phase": "1",
-  "subphase": "1.4 R4 complete",
-  "active_step_id": "R5",
-  "research_round": 4,
+  "subphase": "1.5 R5 complete",
+  "active_step_id": "R6",
+  "research_round": 5,
   "exploration_round": 0,
   "proof_review_round": 0,
   "premortem_round": 0,
@@ -26,10 +26,10 @@
     "R1 decomposition",
     "R2 breadth research",
     "R3 synthesis and gap analysis",
-    "R4 depth verification"
+    "R4 depth verification",
+    "R5 adversarial review"
   ],
   "pending": [
-    "R5 adversarial review",
     "R6 empirical verification"
   ],
   "not_applicable": [
@@ -42,11 +42,11 @@
   "artifacts": {
     "plan/PROFILE.md": "6787f0e4d353d1d49ad30030726288816cd23835c9b10570dee88dc1205333da",
     "plan/ASSUMPTIONS.md": "6d81f58860d95bccf288f6662cc9e8e36f69e98892f7bf1bcc67fbb5d5f38990",
-    "plan/DECISIONS.md": "921acd7fbb8588a9009c0c5afc26f020263b720dd6922ff666a6a916de8b5855",
+    "plan/DECISIONS.md": "a6b5ae9ebd6b7ef02b53d8872831e5a24cf750b0a442fca6c05d1fabf35f5a1f",
     "research/PRIOR_KNOWLEDGE.md": "6dde3b8e019cfd7787aac047082e8867e4709a140b81f74991d95473110c72b6",
-    "research/claims.json": "92a83d58986ef4e2df0c18c401c12c3de490e8564c4719c16bce32444929d40e",
+    "research/claims.json": "2d0d48991f7b5d823de02bd26770060c172c12a1f7383d695831413549916962",
     "research/QUESTIONS.md": "e65b89e5e9f175cc660cd6a6808f698eb48959595ba2dea187147f4db253a8ef",
-    "research/SOURCES.md": "3f0b3fe937a806a188e0413ffdf11700efb5dbdcead863d34d9e4ed97b15e551",
+    "research/SOURCES.md": "86a392e8987bf026d7c9e385916cbc9d46a9be4aca2780544fc9370607b7a98b",
     "research/rounds/round-2.md": "d22bec940629eb142d75ede69e6c41d4034bf01c0fcb5821e6322f672b56cff7",
     "research/reference-candidates/manifest.json": "959435153ceb1e20d76cc0a7971272e4bf6b6f33ef38623fff9fc8f49a59a223",
     "research/reference-candidates/analysis.json": "73dc63b692ca43e8d178871bac531fc06877489f1d8f329b7579c562939eec45",
@@ -75,7 +75,12 @@
     "knowledge/K-20261104T004600Z-juce-host-only-processor-contract.md": "979ac272a2011ecf8197e952f5c3b0165a1b8bb7d2d8cde503f5741caa0e9a2c",
     "knowledge/K-20261104T004700Z-apvts-state-not-realtime-safe.md": "daefad8fc6349198396ccf239a5548aadf33085a1fb2281cc1d716037795b6e9",
     "lessons/L-20261104T004000Z-configured-package-index-unreachable.md": "95705864d45387c731d359548874cf832d27f03b1ee3ae06a29650754d439128",
-    "lessons/L-20261104T004100Z-cmake-package-needs-data-and-exec-bits.md": "e6df8263f96a08808c014e4b14965aa9f9dde96c49fb6093ec7320082445ba0e"
+    "lessons/L-20261104T004100Z-cmake-package-needs-data-and-exec-bits.md": "e6df8263f96a08808c014e4b14965aa9f9dde96c49fb6093ec7320082445ba0e",
+    "research/rounds/round-5.md": "1a4f64acbe149746a200eadf0f57e7251e33aeb27b608bc7db1ca8018ba4a817",
+    "knowledge/K-20261104T005000Z-juce-905-parser-and-macos-limits.md": "f42f96051098aba9c78df2e0c556efcf879fe6752c9f729013fd948a998e05f9",
+    "knowledge/K-20261104T005100Z-vst3-sdk-mit-sbom.md": "45a479f6f2c5587c44ab60cac25869391762d808f95190724274d1e385c1d83a",
+    "knowledge/K-20261104T005200Z-pluginval-plugin-info-race.md": "475c8de1a251c911ed797504fc8b7f7642f2d125f67164a218ec0745224f37de",
+    "knowledge/K-20261104T005300Z-pluginval-exit-not-coverage-proof.md": "e1d3470fa5bcf7f0bcbbf67ea0a0636c402371c22b389acae89f04bda64fdfe9"
   },
   "execution_context": {
     "current_objective": "Produce a zero-question software+audio implementation plan for a JUCE 9 psychobilly slap-double-bass VST3.",
@@ -84,12 +89,12 @@
     ],
     "step_pointer": {
       "phase": "1",
-      "subphase": "R5",
+      "subphase": "R6",
       "item_index": 0,
-      "sub_action": "1.4 R4 complete",
+      "sub_action": "1.5 R5 complete",
       "retry_count": 0
     },
-    "scratchpad": "R4 closed C-010 as non-load-bearing and verified action/toolchain/JUCE interface contracts; R5 adversarial research next.",
+    "scratchpad": "R5 added parser/licence/validator-race/coverage findings; empirical architecture, analyser and performance spikes remain.",
     "in_flight_operation": null,
     "tool_cache": {
       "subagents": false,
@@ -146,8 +151,8 @@
     }
   ],
   "open_items": [
-    "Challenge pluginval, JUCE, CI, DSP and listening assumptions adversarially",
-    "Compile and measure architecture/control/performance spikes"
+    "Compile and measure architecture/control/performance spikes",
+    "Derive attainable thresholds and freeze interfaces/tests"
   ],
   "lesson_store": {
     "location": "https://github.com/qualitycoding/Lessons",
@@ -288,7 +293,11 @@
     "K-20261104T004400Z-pluginval-archive-integrity",
     "K-20261104T004500Z-pinned-toolchain-staging",
     "K-20261104T004600Z-juce-host-only-processor-contract",
-    "K-20261104T004700Z-apvts-state-not-realtime-safe"
+    "K-20261104T004700Z-apvts-state-not-realtime-safe",
+    "K-20261104T005000Z-juce-905-parser-and-macos-limits",
+    "K-20261104T005100Z-vst3-sdk-mit-sbom",
+    "K-20261104T005200Z-pluginval-plugin-info-race",
+    "K-20261104T005300Z-pluginval-exit-not-coverage-proof"
   ],
-  "updated_at": "2026-11-04T00:48:00Z"
+  "updated_at": "2026-11-04T00:54:00Z"
 }

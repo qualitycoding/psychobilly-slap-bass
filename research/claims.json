@@ -581,6 +581,147 @@
         "T-REALTIME",
         "S-STATE"
       ]
+    },
+    {
+      "id": "C-019",
+      "claim": "JUCE 9.0.5 rejects excessively nested ValueTree, JSON and XML input and limits entity expansion; its documented default macOS deployment target is 12.0.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:malformed-state",
+        "subject:macos-deployment"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/BREAKING_CHANGES.md",
+          "doi": "",
+          "title": "JUCE 9.0.5 BREAKING_CHANGES.md",
+          "version": "9.0.5",
+          "locator": "Version 9.0.5 ValueTree/JSON/XML parser changes and macOS deployment-target change",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "JUCE"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-012",
+        "T-SECURITY",
+        "plan/ENVIRONMENT.md"
+      ]
+    },
+    {
+      "id": "C-020",
+      "claim": "The JUCE 9.0.5 SPDX inventory identifies the bundled VST3 SDK version 3.8.0 under the MIT licence, so third-party notices belong with source and binary artifacts.",
+      "kind": "policy",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:vst3-licensing"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/JUCE.spdx.json",
+          "doi": "",
+          "title": "JUCE 9.0.5 SPDX software bill of materials",
+          "version": "9.0.5",
+          "locator": "package name VST3 SDK: licenseConcluded/licenseDeclared MIT, versionInfo 3.8.0",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "JUCE"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-013",
+        "S-PACKAGE"
+      ]
+    },
+    {
+      "id": "C-021",
+      "claim": "pluginval issue #149 reports a PluginInfoTest message-thread race after v1.0.4, and maintainer commit fea38e7ed6a5e35b2e9122bb5685fc3dc8fe9a01 moves that test to the message thread.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:pluginval",
+        "subject:validator-race"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/Tracktion/pluginval/issues/149",
+          "doi": "",
+          "title": "Potential Race Condition in PluginInfoTest",
+          "version": "issue #149",
+          "locator": "VST3 getLatencySamples race report and thread-sanitizer context",
+          "accessed": "2026-11-04",
+          "tier": 2,
+          "publisher": "Tracktion issue tracker"
+        },
+        {
+          "url": "https://github.com/Tracktion/pluginval/commit/fea38e7ed6a5e35b2e9122bb5685fc3dc8fe9a01",
+          "doi": "",
+          "title": "PluginInfoTest message-thread fix",
+          "version": "fea38e7ed6a5e35b2e9122bb5685fc3dc8fe9a01",
+          "locator": "PluginInfoTest Requirements::Thread::messageThread diff and CHANGELIST entry",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Tracktion source"
+        }
+      ],
+      "confidence": "corroborated",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-011",
+        "S-HOST"
+      ]
+    },
+    {
+      "id": "C-022",
+      "claim": "pluginval v1.0.4 skips tests above the selected strictness, GUI tests when GUI is disabled, and explicitly disabled tests; therefore CI must inspect logs and independent artifacts rather than treating exit code zero as proof of intended coverage.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:pluginval",
+        "subject:validation-coverage"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/Tracktion/pluginval/ed19c2c16b57a6d94db391bea3ef4a80b769d5bf/Source/PluginTests.cpp",
+          "doi": "",
+          "title": "pluginval v1.0.4 PluginTests.cpp",
+          "version": "v1.0.4",
+          "locator": "lines 174–190: strictness, requiresGUI and disabledTests continue paths",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Tracktion source"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/Tracktion/pluginval/ed19c2c16b57a6d94db391bea3ef4a80b769d5bf/Source/CommandLine.cpp",
+          "doi": "",
+          "title": "pluginval v1.0.4 CommandLine.cpp",
+          "version": "v1.0.4",
+          "locator": "validate completion callback: nonzero exitCode calls exitWithError, zero quits successfully",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Tracktion source"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-014",
+        "T-HOST",
+        "S-HOST"
+      ]
     }
   ]
 }
