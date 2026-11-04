@@ -1,7 +1,7 @@
 {
   "run_id": "20261103T230504Z-psychobilly-slap-bass",
   "branch": "gen-20261103T230504Z-psychobilly-slap-bass",
-  "sequence": 6,
+  "sequence": 7,
   "profiles": [
     "software"
   ],
@@ -10,10 +10,10 @@
     "software.deploys": false,
     "courseware": false
   },
-  "phase": "1",
-  "subphase": "1.5 R5 complete",
-  "active_step_id": "R6",
-  "research_round": 5,
+  "phase": "2",
+  "subphase": "1.3 R6 complete",
+  "active_step_id": "2B-interfaces",
+  "research_round": 6,
   "exploration_round": 0,
   "proof_review_round": 0,
   "premortem_round": 0,
@@ -27,10 +27,13 @@
     "R2 breadth research",
     "R3 synthesis and gap analysis",
     "R4 depth verification",
-    "R5 adversarial review"
+    "R5 adversarial review",
+    "R6 empirical verification"
   ],
   "pending": [
-    "R6 empirical verification"
+    "Interface-first specification",
+    "Frozen red tests",
+    "Traceability and freeze"
   ],
   "not_applicable": [
     "math",
@@ -42,11 +45,11 @@
   "artifacts": {
     "plan/PROFILE.md": "6787f0e4d353d1d49ad30030726288816cd23835c9b10570dee88dc1205333da",
     "plan/ASSUMPTIONS.md": "6d81f58860d95bccf288f6662cc9e8e36f69e98892f7bf1bcc67fbb5d5f38990",
-    "plan/DECISIONS.md": "a6b5ae9ebd6b7ef02b53d8872831e5a24cf750b0a442fca6c05d1fabf35f5a1f",
+    "plan/DECISIONS.md": "169342b8534ec2fd0b4752c8edabf95198d4c52e37f8faf471ff98f41e3b5338",
     "research/PRIOR_KNOWLEDGE.md": "6dde3b8e019cfd7787aac047082e8867e4709a140b81f74991d95473110c72b6",
-    "research/claims.json": "2d0d48991f7b5d823de02bd26770060c172c12a1f7383d695831413549916962",
+    "research/claims.json": "409c39cfdfbfe31a4431e8c92dd2106cf78e95128ae2b284e0926ff7d745212e",
     "research/QUESTIONS.md": "e65b89e5e9f175cc660cd6a6808f698eb48959595ba2dea187147f4db253a8ef",
-    "research/SOURCES.md": "86a392e8987bf026d7c9e385916cbc9d46a9be4aca2780544fc9370607b7a98b",
+    "research/SOURCES.md": "2108d7ffcb13b37faddb5c17e5e255ca1dd8a8d724b5b5729828e1bb9ab52536",
     "research/rounds/round-2.md": "d22bec940629eb142d75ede69e6c41d4034bf01c0fcb5821e6322f672b56cff7",
     "research/reference-candidates/manifest.json": "959435153ceb1e20d76cc0a7971272e4bf6b6f33ef38623fff9fc8f49a59a223",
     "research/reference-candidates/analysis.json": "73dc63b692ca43e8d178871bac531fc06877489f1d8f329b7579c562939eec45",
@@ -80,7 +83,19 @@
     "knowledge/K-20261104T005000Z-juce-905-parser-and-macos-limits.md": "f42f96051098aba9c78df2e0c556efcf879fe6752c9f729013fd948a998e05f9",
     "knowledge/K-20261104T005100Z-vst3-sdk-mit-sbom.md": "45a479f6f2c5587c44ab60cac25869391762d808f95190724274d1e385c1d83a",
     "knowledge/K-20261104T005200Z-pluginval-plugin-info-race.md": "475c8de1a251c911ed797504fc8b7f7642f2d125f67164a218ec0745224f37de",
-    "knowledge/K-20261104T005300Z-pluginval-exit-not-coverage-proof.md": "e1d3470fa5bcf7f0bcbbf67ea0a0636c402371c22b389acae89f04bda64fdfe9"
+    "knowledge/K-20261104T005300Z-pluginval-exit-not-coverage-proof.md": "e1d3470fa5bcf7f0bcbbf67ea0a0636c402371c22b389acae89f04bda64fdfe9",
+    "research/rounds/round-6.md": "2c884f48c1a6830b735b5148112ea99cae6382961d4975008b33fad6076733e5",
+    "research/spikes/dsp/dsp_spike.py": "fe5cc6dd07667d0d2b70b9d8aac0277690c10411efe03e0d6af557aec81c2a80",
+    "research/spikes/dsp/dsp-output.json": "2386d34ff68f85fc21821d65e20822753b39a56e53dce52e0e1b91008d9de211",
+    "research/spikes/performance/perf_spike.cpp": "d8bd73aab7da20922a1912359782dd97b6e7cdc85c0bcddf543eec692c3cc5f1",
+    "research/spikes/performance/perf-output.json": "c74884f1695e7809e2aa76acd6d77f94686090be412a684fcd9260a2f628feee",
+    "lessons/L-20261104T010000Z-spike-workload-exceeded-call-lifetime.md": "e9a8486d2e6e4b889ffbb99cbe8070bb51f373405e2067094851644482921637",
+    "knowledge/K-20261104T011000Z-dsp-architecture-spike.md": "b61c6f913e3e081facb8071f621e25e930afe4583c34715ab556ae899bbacac8",
+    "knowledge/K-20261104T011100Z-analyser-known-answer-results.md": "0d90a3b07581b3348d533567513f92baacb0ed2ee6e22969f7e532a1500648c4",
+    "knowledge/K-20261104T011200Z-eight-control-mapping-results.md": "544b25f7d874f4676294dbadf64af5bc0b21ddd1c11688ac436897600a5fe38e",
+    "knowledge/K-20261104T011300Z-eight-voice-lifecycle-results.md": "6244a4ccdf40a68a84273a8e6035c6f6afd663f18cf20a28520a288f9ca34c0f",
+    "knowledge/K-20261104T011400Z-reference-spread-not-realism.md": "66c3f74e69e9b656f0e41eb9fb3341d4656e80ab4756189d5119a9ba8b750961",
+    "knowledge/K-20261104T011500Z-native-eight-voice-performance.md": "a53dc05d8e0418392dcd6a156648206534cbe87c72a35269e285d16ecc83fb8e"
   },
   "execution_context": {
     "current_objective": "Produce a zero-question software+audio implementation plan for a JUCE 9 psychobilly slap-double-bass VST3.",
@@ -88,13 +103,13 @@
       "Phase 1 iterative research"
     ],
     "step_pointer": {
-      "phase": "1",
-      "subphase": "R6",
+      "phase": "2",
+      "subphase": "2B",
       "item_index": 0,
-      "sub_action": "1.5 R5 complete",
+      "sub_action": "1.3 R6 complete",
       "retry_count": 0
     },
-    "scratchpad": "R5 added parser/licence/validator-race/coverage findings; empirical architecture, analyser and performance spikes remain.",
+    "scratchpad": "R6 verified spike-informed DSP/analyser/control/performance contracts; begin interfaces and red frozen tests.",
     "in_flight_operation": null,
     "tool_cache": {
       "subagents": false,
@@ -151,8 +166,9 @@
     }
   ],
   "open_items": [
-    "Compile and measure architecture/control/performance spikes",
-    "Derive attainable thresholds and freeze interfaces/tests"
+    "Declare public interfaces and exact parameter/event/state contracts",
+    "Create and red-verify frozen tests",
+    "Write zero-question plan and audits"
   ],
   "lesson_store": {
     "location": "https://github.com/qualitycoding/Lessons",
@@ -273,7 +289,8 @@
     "L-20261103T231500Z-credential-cache-socket-mount",
     "L-20261104T000900Z-stale-git-index-lock-after-mount-error",
     "L-20261104T004000Z-configured-package-index-unreachable",
-    "L-20261104T004100Z-cmake-package-needs-data-and-exec-bits"
+    "L-20261104T004100Z-cmake-package-needs-data-and-exec-bits",
+    "L-20261104T010000Z-spike-workload-exceeded-call-lifetime"
   ],
   "knowledge_added": [
     "K-20261104T003002Z-juce-9-agpl-commercial-license",
@@ -297,7 +314,13 @@
     "K-20261104T005000Z-juce-905-parser-and-macos-limits",
     "K-20261104T005100Z-vst3-sdk-mit-sbom",
     "K-20261104T005200Z-pluginval-plugin-info-race",
-    "K-20261104T005300Z-pluginval-exit-not-coverage-proof"
+    "K-20261104T005300Z-pluginval-exit-not-coverage-proof",
+    "K-20261104T011000Z-dsp-architecture-spike",
+    "K-20261104T011100Z-analyser-known-answer-results",
+    "K-20261104T011200Z-eight-control-mapping-results",
+    "K-20261104T011300Z-eight-voice-lifecycle-results",
+    "K-20261104T011400Z-reference-spread-not-realism",
+    "K-20261104T011500Z-native-eight-voice-performance"
   ],
-  "updated_at": "2026-11-04T00:54:00Z"
+  "updated_at": "2026-11-04T01:16:00Z"
 }

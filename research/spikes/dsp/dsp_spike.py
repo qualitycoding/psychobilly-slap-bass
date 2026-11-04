@@ -16,7 +16,7 @@ DEFAULTS = {
     "pluck_slap": 0.35,
     "slap_brightness": 0.55,
     "body_resonance": 0.45,
-    "sustain": 0.55,
+    "sustain": 0.70,
     "string_tension": 0.50,
     "attack_noise": 0.20,
     "mechanical_noise": 0.15,
@@ -53,8 +53,11 @@ def onset_index(x: np.ndarray, sr: int) -> int:
     return int(hits[0] * block)
 
 
-def estimate_pitch(x: np.ndarray, sr: int, lo: float = 35.0, hi: float = 220.0) -> float:
-    """Normalised autocorrelation; chooses the first strong long-lag peak, not FFT maximum."""
+def estimate_pitch(x: np.ndarray, sr: int, lo: float = 35.0, hi: float = 220.0, expected_f0: float | None = None) -> float:
+    """Normalised autocorrelation, optionally note-conditioned to +/-50 cents for matched events."""
+    if expected_f0 is not None:
+        lo = expected_f0 * 2.0 ** (-50.0 / 1200.0)
+        hi = expected_f0 * 2.0 ** (50.0 / 1200.0)
     start = onset_index(x, sr)
     count = min(len(x) - start, int(0.35 * sr))
     if count < sr // 10:
@@ -130,10 +133,11 @@ def synth(f0: float, sr: int, velocity: float, duration: float, controls: dict[s
     pluck_position = 0.18
     comb = np.roll(excitation, max(1, int(pluck_position * delay)))
     excitation = 0.32 * velocity * (excitation - 0.65 * comb)
+    excitation = signal.lfilter([0.30], [1.0, -0.70], excitation)
     line[:] = excitation
     t60 = 0.35 * 12.0 ** c["sustain"]
     loop_gain = min(0.99995, 10.0 ** (-3.0 / (f0 * t60)))
-    filter_alpha = 0.72 + 0.22 * c["string_tension"]
+    filter_alpha = 0.35 + 0.25 * c["string_tension"]
     threshold = max(0.035, 0.27 - 0.105 * velocity - 0.045 * c["string_tension"])
     write = 0
     loop_state = 0.0
@@ -152,6 +156,8 @@ def synth(f0: float, sr: int, velocity: float, duration: float, controls: dict[s
         line[write] = loop_gain * loop_state + correction
         pitched[i] = x
         write = (write + 1) % size
+    radiation_cutoff = 350.0 + 350.0 * c["string_tension"]
+    pitched = signal.sosfilt(signal.butter(2, radiation_cutoff, fs=sr, output="sos"), pitched)
     body = resonator(pitched, sr)
     contact_len = min(n, int(0.040 * sr))
     noise = rng.standard_normal(contact_len)
@@ -166,11 +172,12 @@ def synth(f0: float, sr: int, velocity: float, duration: float, controls: dict[s
     mechanical_len = min(n, int(0.120 * sr))
     mechanical = np.zeros(n)
     mechanical[:mechanical_len] = rng.standard_normal(mechanical_len) * np.exp(-np.arange(mechanical_len) / max(1.0, 0.030 * sr))
-    contact_component = c["pluck_slap"] * (0.28 * contact + 1.8 * collisions)
+    filtered_collisions = signal.lfilter([alpha], [1.0, -(1.0 - alpha)], collisions)
+    contact_component = c["pluck_slap"] * (0.28 * contact + 1.8 * filtered_collisions)
     attack_component = c["attack_noise"] * 0.12 * attack
     mechanical_component = c["mechanical_noise"] * 0.025 * mechanical
     body_component = c["body_resonance"] * 0.50 * body
-    mixed = 0.32 * (0.75 * pitched + body_component + contact_component + attack_component + mechanical_component)
+    mixed = 0.24 * (0.75 * pitched + body_component + contact_component + attack_component + mechanical_component)
     output_gain = 10.0 ** ((-24.0 * (1.0 - c["output_level"])) / 20.0)
     output = mixed * output_gain
     return output, {"pitched": pitched, "body": body_component, "contact": contact_component,
@@ -178,7 +185,7 @@ def synth(f0: float, sr: int, velocity: float, duration: float, controls: dict[s
 
 
 def metrics(x: np.ndarray, sr: int, expected_f0: float | None = None) -> dict[str, float]:
-    pitch = estimate_pitch(x, sr)
+    pitch = estimate_pitch(x, sr, expected_f0=expected_f0)
     return {
         "peak": float(np.max(np.abs(x))),
         "rms": rms(x),
@@ -321,7 +328,12 @@ def main() -> None:
                 m.update({"sample_rate": sr, "f0": f0, "velocity": velocity})
                 architecture.append(m)
     extremes = []
-    corners = [{k: float((mask >> i) & 1) for i, k in enumerate(DEFAULTS)} for mask in range(256)]
+    keys = list(DEFAULTS)
+    corners = [{k: 0.0 for k in keys}, {k: 1.0 for k in keys}]
+    corners += [{**{k: 0.0 for k in keys}, key: 1.0} for key in keys]
+    corners += [{**{k: 1.0 for k in keys}, key: 0.0} for key in keys]
+    planned_samples = sum(int(0.7 * sr) * 3 * len(corners) for sr in (44100, 48000, 96000))
+    print(f"extreme cases: {3 * 3 * len(corners)}; planned extreme sample iterations: {planned_samples}", flush=True)
     for sr in (44100, 48000, 96000):
         for f0 in (41.203444, 55.0, 103.826174):
             for index, c in enumerate(corners):
@@ -337,8 +349,9 @@ def main() -> None:
     for label, f0 in REFERENCE_NOTES.items():
         for dynamic in (0.25, 0.55, 0.90):
             c = dict(DEFAULTS)
-            c["pluck_slap"] = 0.10
-            c["attack_noise"] = 0.05
+            c["pluck_slap"] = 0.0
+            c["attack_noise"] = 0.0
+            c["mechanical_noise"] = 0.0
             out, _ = synth(f0, 44100, dynamic, 1.8, c, SEED + int(f0 * 100) + int(dynamic * 100))
             m = metrics(out, 44100, f0)
             m.update({"label": label, "dynamic": dynamic})

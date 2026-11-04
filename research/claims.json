@@ -722,6 +722,203 @@
         "T-HOST",
         "S-HOST"
       ]
+    },
+    {
+      "id": "C-023",
+      "claim": "The planning DSP spike completed 54 architecture runs and 162 extreme-control runs at 44.1, 48 and 96 kHz with finite output and all extreme peaks below full scale; deterministic reproduction produced identical output.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:string-contact-body-spike"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/dsp/dsp_spike.py",
+          "doi": "",
+          "title": "Local R6 empirical spike source",
+          "version": "2026-11-04",
+          "locator": "complete committed artifact",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        },
+        {
+          "url": "research/spikes/dsp/dsp-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "summary and threshold_proposals",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-016",
+        "T-DSP",
+        "T-SLAP"
+      ]
+    },
+    {
+      "id": "C-024",
+      "claim": "The analyser spike passes sine, second-harmonic-dominant, missing-fundamental, onset, exponential-decay and centroid known-answer tests; note-conditioned reference/candidate analysis supports a 21-cent pitch regression limit.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:analyser-correctness"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/dsp/dsp-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "summary and threshold_proposals",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-017",
+        "T-ANALYSER"
+      ]
+    },
+    {
+      "id": "C-025",
+      "claim": "All eight control mappings produced strictly increasing their designated measured quantity at 0, 0.25, 0.5, 0.75 and 1 with fixed excitation seed in the planning model.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:control-mappings"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/dsp/dsp-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "summary and threshold_proposals",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-017",
+        "T-CONTROLS"
+      ]
+    },
+    {
+      "id": "C-026",
+      "claim": "The abstract eight-slot voice lifecycle spike bounded 256 note events with retrigger/steal crossfades, and the 0.015 off-diagonal sympathetic coupling matrix had spectral radius 0.105.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:voice-lifecycle",
+        "subject:sympathetic-coupling"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/dsp/dsp-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "summary and threshold_proposals",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-019",
+        "T-VOICES"
+      ]
+    },
+    {
+      "id": "C-027",
+      "claim": "Measured ordinary-pluck candidate/reference spread supports a 1.433155096971784 absolute log2 spectral-centroid regression limit; the much larger decay spread remains diagnostic and is not evidence of realism.",
+      "kind": "numerical",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:reference-metric-spread"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/dsp/dsp-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "summary and threshold_proposals",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-017",
+        "T-REF"
+      ]
+    },
+    {
+      "id": "C-028",
+      "claim": "The native eight-voice 96 kHz/64-sample workload completed seven five-second repeats with maximum RTF 0.021304663 and finite output on the Linux sandbox, supporting a 0.25 per-runner CI ceiling and 10% bootstrapped regression allowance, not a cross-platform guarantee.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "domain:audio",
+        "subject:performance-workload",
+        "tech:cpp"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/performance/perf_spike.cpp",
+          "doi": "",
+          "title": "Local R6 empirical spike source",
+          "version": "2026-11-04",
+          "locator": "complete committed artifact",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        },
+        {
+          "url": "research/spikes/performance/perf-output.json",
+          "doi": "",
+          "title": "Local R6 empirical spike output",
+          "version": "2026-11-04",
+          "locator": "complete committed artifact",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-018",
+        "T-PERFORMANCE"
+      ]
     }
   ]
 }

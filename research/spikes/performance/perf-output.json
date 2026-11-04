@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sample_rate": 96000,
+  "block_size": 64,
+  "voices": 8,
+  "seconds_per_repeat": 5,
+  "repeats": 7,
+  "compiler": "g++ 12.2.0 -std=c++17 -O3 -DNDEBUG",
+  "rtf_runs": [0.0195903478, 0.0198671038, 0.02014419, 0.0201469084, 0.0203561386, 0.020496157, 0.021304663],
+  "rtf_min": 0.0195903478,
+  "rtf_median": 0.0201469084,
+  "rtf_max": 0.021304663,
+  "rtf_coefficient_of_variation": 0.02490478233,
+  "finite": true,
+  "output_peak": 0.01385545265,
+  "proposed_absolute_rtf_limit_per_runner": 0.25,
+  "proposed_baseline_regression_allowance": 0.1,
+  "scope": "Linux sandbox workload evidence only; native CI must establish each runner baseline. No realtime guarantee or listening claim."
+}
