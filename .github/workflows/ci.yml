@@ -57,6 +57,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libasound2-dev libfreetype6-dev libfontconfig1-dev \
             libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev \
+            libxi-dev libxrender-dev libxfixes-dev \
             libgl1-mesa-dev libcurl4-openssl-dev
           dpkg -l | grep -E "libasound2-dev|libfreetype6-dev|libfontconfig1-dev|libx11-dev|libxext-dev|libxinerama-dev|libxrandr-dev|libxcursor-dev" || true
 
@@ -79,6 +80,13 @@ jobs:
       - name: Build
         shell: bash
         run: cmake --build build --config Release --parallel 2 2>&1 | tee build/build.log
+
+      - name: Renderer direct smoke (captures crash output on all OSes)
+        shell: bash
+        run: |
+          exe=$(find build -name 'psychobilly-render*' -type f ! -name '*.pdb' | head -1)
+          echo "exe: $exe"
+          "$exe" --probe
 
       - name: CTest (probe + demo smoke)
         shell: bash
