@@ -1,0 +1,13 @@
+{"controls": {"attack_noise": 0.2, "body_resonance": 0.45, "mechanical_noise": 0.15, "output_level": 0.75, "pluck_slap": 0.8, "slap_brightness": 0.55, "string_tension": 0.35, "sustain": 0.7}, "render_seconds": 8.0, "sample_rate": 48000, "schema": 1, "seed": 852233}
+{"channel": 1, "note": 24, "sample": 0, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 24, "sample": 14863, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 26, "sample": 16363, "type": "note_on", "velocity": 0.45}
+{"channel": 1, "note": 26, "sample": 31226, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 32726, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 28, "sample": 47589, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 24, "sample": 49089, "type": "note_on", "velocity": 0.45}
+{"channel": 1, "note": 24, "sample": 63952, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 65452, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 28, "sample": 80315, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 26, "sample": 81815, "type": "note_on", "velocity": 0.45}
+{"channel": 1, "note": 26, "sample": 96678, "type": "note_off", "velocity": 0.0}

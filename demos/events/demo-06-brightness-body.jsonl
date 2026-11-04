@@ -1,0 +1,21 @@
+{"controls": {"attack_noise": 0.2, "body_resonance": 0.0, "mechanical_noise": 0.15, "output_level": 0.75, "pluck_slap": 0.35, "slap_brightness": 0.0, "string_tension": 0.5, "sustain": 0.7}, "render_seconds": 12.0, "sample_rate": 48000, "schema": 1, "seed": 852230}
+{"channel": 1, "note": 28, "sample": 0, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 28, "sample": 9709, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 33, "sample": 10909, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 33, "sample": 20618, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 21818, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 28, "sample": 31527, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 33, "sample": 32727, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 33, "sample": 42436, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 43636, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 28, "sample": 53345, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 33, "sample": 54545, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 33, "sample": 64254, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 65454, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 28, "sample": 75163, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 33, "sample": 76363, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 33, "sample": 86072, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 28, "sample": 87272, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 28, "sample": 96981, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "note": 33, "sample": 98181, "type": "note_on", "velocity": 0.8}
+{"channel": 1, "note": 33, "sample": 107890, "type": "note_off", "velocity": 0.0}

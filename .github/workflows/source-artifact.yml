@@ -1,0 +1,32 @@
+name: source-artifact
+
+# Source-artifact workflow only (S-070 step 4). Any public release workflow
+# remains absent until gate G-002 authorises one.
+
+on:
+  push:
+    branches-ignore:
+      - "evidence/**"
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Package source with notices
+        run: |
+          mkdir -p dist
+          tar --exclude=.git --exclude=build --exclude=.tools \
+            -czf dist/psychobilly-slap-bass-source.tar.gz .
+          sha256sum dist/psychobilly-slap-bass-source.tar.gz > dist/SHA256SUMS
+          test -s LICENSE
+          test -s THIRD-PARTY-NOTICES.md
+          cp LICENSE THIRD-PARTY-NOTICES.md dist/
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: source-artifact
+          path: dist/
+          if-no-files-found: error

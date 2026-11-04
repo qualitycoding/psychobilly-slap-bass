@@ -1,0 +1,266 @@
+name: ci
+
+on:
+  push:
+    branches-ignore:
+      - "evidence/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JUCE_COMMIT: d60b7a78030661574a615b586d9325ba7a7fa7dd
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  native:
+    name: ${{ matrix.runner }} build/test/validate
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, windows-2025, macos-15]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Print runner/toolchain identity
+        shell: bash
+        run: |
+          uname -a
+          cmake --version | head -1
+          ${{ matrix.runner == 'windows-2025' && 'echo MSVC via Visual Studio 2022' || 'c++ --version | head -1' }}
+          python --version 2>&1 || py -3.12 --version
+          git rev-parse HEAD
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install pinned Python tooling and write environment lock
+        shell: bash
+        run: |
+          python -m pip install --index-url https://pypi.org/simple -r requirements.txt
+          python -m pip freeze --all | sort > environment-lock.txt
+          sha256sum environment-lock.txt || certutil -hashfile environment-lock.txt SHA256
+
+      - name: Install JUCE Linux development packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libasound2-dev libfreetype6-dev libfontconfig1-dev \
+            libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev \
+            libgl1-mesa-dev libcurl4-openssl-dev
+          dpkg -l | grep -E "libasound2-dev|libfreetype6-dev|libfontconfig1-dev|libx11-dev|libxext-dev|libxinerama-dev|libxrandr-dev|libxcursor-dev" || true
+
+      - name: Cache JUCE source (pinned commit, full history per ENVIRONMENT)
+        if: runner.os != 'Windows'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: build/_deps/juce-src
+          key: juce-${{ env.JUCE_COMMIT }}-${{ runner.os }}-${{ runner.arch }}
+          restore-keys: juce-${{ env.JUCE_commit }}-
+
+      - name: Configure
+        shell: bash
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DPSB_BUILD_VST3=ON -DPSB_BUILD_DEMOS=ON
+          ${{ runner.os == 'macOS' && '-DCMAKE_OSX_DEPLOYMENT_TARGET=12.0' || '' }}
+          ${{ runner.os == 'Windows' && '-A x64' || '' }}
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release --parallel 2 2>&1 | tee build/build.log
+
+      - name: CTest (probe + demo smoke)
+        shell: bash
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Frozen contract tests
+        shell: bash
+        run: |
+          python scripts/verify_freeze.py
+          python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee build/frozen-tests.log
+
+      - name: Native performance benchmark (D-018/D-029)
+        shell: bash
+        run: |
+          python - <<'PYEOF'
+          import json, os, subprocess, sys, platform, hashlib
+          from pathlib import Path
+          binary = next(Path("build").rglob("psychobilly-perf*"))
+          env = dict(os.environ); env["GITHUB_ACTIONS"] = "true"
+          result = subprocess.run([str(binary), "--sample-rate", "96000",
+              "--block-size", "64", "--voices", "8", "--seconds", "5",
+              "--repeats", "7"], capture_output=True, text=True, env=env)
+          print(result.stdout)
+          if result.returncode != 0:
+              print(result.stderr); sys.exit(1)
+          data = json.loads(result.stdout)
+          assert data["finite"], "non-finite output"
+          assert data["rtf_max"] <= 0.25, f"RTF {data['rtf_max']} exceeds 0.25"
+          data["hardware"] = platform.machine()
+          data["environment_lock_sha256"] = hashlib.sha256(
+              Path("environment-lock.txt").read_bytes()).hexdigest()
+          Path("artifacts").mkdir(exist_ok=True)
+          Path("artifacts/performance.json").write_text(json.dumps(data, indent=2) + "\n")
+          PYEOF
+
+      - name: Download and verify pluginval (pinned archive)
+        shell: bash
+        run: |
+          case "${{ runner.os }}" in
+            Linux)   url=https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Linux.zip;   expect=c01c49d8063965c4c2dea8324468336768f5c9139e0b1caebde14c2400b55352; bytes=5911681 ;;
+            Windows) url=https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip; expect=c08e61ce3b96db41636f8ec7e76f4c7e2c13ebdac7fa1b5a1f52b4f32ec715ab; bytes=2408590 ;;
+            macOS)   url=https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_macOS.zip;   expect=3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f; bytes=9202795 ;;
+          esac
+          curl -fsSL --retry 5 -o pluginval.zip "$url"
+          actual=$(sha256sum pluginval.zip | cut -d' ' -f1)
+          [ "$actual" = "$expect" ] || { echo "pluginval hash mismatch"; exit 1; }
+          [ "$(stat -c %s pluginval.zip)" = "$bytes" ] || { echo "pluginval byte count mismatch"; exit 1; }
+          unzip -o pluginval.zip -d pluginval-dist
+
+      - name: pluginval primary validation (D-014)
+        shell: bash
+        run: |
+          plugin=$(find build -name "*.vst3" -type d -o -name "*.vst3" -type f | head -1)
+          [ -n "$plugin" ] || { echo "no VST3 artifact"; exit 1; }
+          mkdir -p artifacts/pluginval
+          case "${{ runner.os }}" in
+            Linux)   bin=pluginval-dist/pluginval ;;
+            macOS)   bin=pluginval-dist/pluginval.app/Contents/MacOS/pluginval ;;
+            Windows) bin=pluginval-dist/pluginval.exe ;;
+          esac
+          chmod +x "$bin" || true
+          xvfb=""; [ "${{ runner.os }}" = "Linux" ] && xvfb="xvfb-run -a"
+          $xvfb "$bin" --validate "$plugin" --strictness-level 7 \
+            --sample-rates 44100,48000,88200,96000 \
+            --block-sizes 64,128,256,512,1024 \
+            --random-seed 5265473 --timeout-ms 120000 --repeat 3 --randomise \
+            --output-dir artifacts/pluginval --output-filename pluginval-primary --verbose \
+            2>&1 | tee artifacts/pluginval/pluginval-primary.log
+          test ${PIPESTATUS[0]} -eq 0
+
+      - name: Assert pluginval coverage (no skips/failures; required surface)
+        shell: bash
+        run: |
+          python - <<'PYEOF'
+          import re, sys
+          from pathlib import Path
+          log = Path("artifacts/pluginval/pluginval-primary.log").read_text(errors="ignore")
+          problems = []
+          if "Test finished" not in log and "All tests completed" not in log and "finished" not in log.lower():
+              problems.append("no completion marker")
+          for token in ("fail", "error"):
+              for line in log.splitlines():
+                  if re.search(rf"\b{token}s?\b", line, re.I) and "0 " not in line and "Pass" not in line:
+                      if "failed" in line.lower() or "error" in line.lower():
+                          problems.append(line.strip()[:160])
+          for family in ("PluginInfoTest", "PluginStateTest", "BusTest", "AutomationTest"):
+              if family not in log:
+                  problems.append(f"missing test family: {family}")
+          for token in ("44100", "48000", "88200", "96000", "64", "128", "256", "512", "1024"):
+              if token not in log:
+                  problems.append(f"missing requested rate/blocksize: {token}")
+          if "--skip-gui-tests" in log or "disabled" in log.lower():
+              problems.append("skip/disabled marker present")
+          if problems:
+              print("\n".join(problems)); sys.exit(1)
+          print("pluginval coverage assertions OK")
+          PYEOF
+
+      - name: Security scans (pip-audit + repository audit)
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python -m pip_audit -r requirements.txt --no-deps --disable-pip --strict \
+            --format json --output artifacts/pip-audit.json
+          python scripts/audit_repository.py --output artifacts/repository-audit.json
+
+      - name: Collect artifacts for upload
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cp build/build.log artifacts/ 2>/dev/null || true
+          cp build/frozen-tests.log artifacts/ 2>/dev/null || true
+          cp environment-lock.txt artifacts/
+          echo "${{ github.sha }}" > artifacts/commit.txt
+          plugin=$(find build -name "*.vst3" | head -1)
+          if [ -n "$plugin" ]; then
+            mkdir -p artifacts/vst3
+            cp -r "$plugin" artifacts/vst3/ 2>/dev/null || cp "$plugin" artifacts/vst3/
+            cp LICENSE THIRD-PARTY-NOTICES.md artifacts/vst3/
+          fi
+          python scripts/verify_artifacts.py artifacts
+          find artifacts -type f -size 0 -print -quit | grep . && { echo "empty artifact found"; exit 1; } || true
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-${{ matrix.runner }}
+          path: artifacts/
+          if-no-files-found: error
+
+  cmake-min:
+    name: ubuntu-24.04 cmake 3.22.4 lower bound
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev libfreetype6-dev libfontconfig1-dev libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev libgl1-mesa-dev libcurl4-openssl-dev
+      - name: Install CMake 3.22.4
+        run: python -m pip install --index-url https://pypi.org/simple "cmake==3.22.4"
+      - name: Configure/build with CMake 3.22.4
+        run: |
+          cmake --version
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPSB_BUILD_VST3=ON -DPSB_BUILD_DEMOS=ON
+          cmake --build build --config Release --parallel 2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: cmake-min-build
+          path: build/build.ninja
+          if-no-files-found: error
+
+  demos:
+    name: reproducible demo corpus
+    runs-on: ubuntu-24.04
+    needs: native
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: |
+          python -m pip install --index-url https://pypi.org/simple -r requirements.txt
+          python -m pip freeze --all | sort > environment-lock.txt
+      - run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPSB_BUILD_VST3=OFF -DPSB_BUILD_DEMOS=ON
+          cmake --build build --config Release --parallel 2
+      - name: Render ten demos
+        shell: bash
+        run: |
+          mkdir -p artifacts/demos
+          count=0
+          for f in demos/events/*.jsonl; do
+            name=$(basename "$f" .jsonl)
+            ./build/psychobilly-render --input "$f" \
+              --output "artifacts/demos/$name.wav" \
+              --metadata "artifacts/demos/$name.json"
+            cp "$f" "artifacts/demos/$name.jsonl"
+            count=$((count+1))
+          done
+          [ "$count" = "10" ] || { echo "expected ten demos, got $count"; exit 1; }
+          ls artifacts/demos/*.wav | wc -l | grep -q "^10$"
+          ls artifacts/demos/*.json | wc -l | grep -q "^10$"
+          python scripts/verify_artifacts.py artifacts/demos
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: demo-corpus
+          path: artifacts/demos/
+          if-no-files-found: error
