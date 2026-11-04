@@ -89,8 +89,9 @@ if(PSB_BUILD_VST3)
         juce::juce_recommended_warning_flags)
 
     add_executable(psb-plugin-info src/psb_plugin_info.cpp)
-    # The PsychobillySlapBass shared-code target already carries the JUCE
-    # module objects; link only it to avoid a second full module compile.
     target_link_libraries(psb-plugin-info PRIVATE
-        PsychobillySlapBass)
+        PsychobillySlapBass
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_gui_extra)
 endif()
