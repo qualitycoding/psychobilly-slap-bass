@@ -81,6 +81,30 @@ jobs:
         shell: bash
         run: cmake --build build --config Release --parallel 2 2>&1 | tee build/build.log
 
+      - name: Windows exe forensics (temporary diagnostics)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set +e
+          echo "== trivial console exe via CMake =="
+          mkdir -p /tmp/hello && cd /tmp/hello
+          printf 'int main(){return 0;}\n' > hello.cpp
+          cmake -S . -B b > /dev/null 2>&1 || { echo cmake-config-failed; }
+          printf 'cmake_minimum_required(VERSION 3.22)\nproject(hello CXX)\nadd_executable(hello hello.cpp)\n' > CMakeLists.txt
+          cmake -S . -B b 2>&1 | tail -2
+          cmake --build b --config Release 2>&1 | tail -2
+          ./b/Release/hello.exe; echo "hello rc=$?"
+          echo "== compile our TU directly with cl =="
+          cd "$GITHUB_WORKSPACE"
+          exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
+          cl //std:c++20 //O2 //MT //EHsc //Isrc //Fo:/tmp/psb-cl.obj //Fe:/tmp/psb-cl.exe src/psychobilly_render.cpp 2>&1 | tail -3
+          /tmp/psb-cl.exe --probe > /tmp/cl-probe.out 2>&1; echo "cl-exe rc=$?"
+          head -c 300 /tmp/cl-probe.out
+          echo "== cmake-built exe again =="
+          "$exe" --probe > /tmp/probe2.out 2>&1; echo "cmake-exe rc=$?"
+          head -c 300 /tmp/probe2.out
+          exit 0
+
       - name: Renderer direct smoke (captures crash output on all OSes)
         shell: bash
         run: |
