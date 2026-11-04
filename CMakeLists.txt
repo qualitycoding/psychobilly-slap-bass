@@ -9,6 +9,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Static MSVC runtime for our CLI tools so the CI smoke probes run on stock
+# runner images without a redistributable install (Git Bash maps a missing
+# vcruntime DLL to the confusing exit code 127 with no output).
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 execute_process(
     COMMAND git rev-parse HEAD
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

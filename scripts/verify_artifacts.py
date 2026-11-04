@@ -22,10 +22,46 @@ def check_wav(path: Path) -> list[str]:
     return problems
 
 
+def _strip_trailing_commas(text: str) -> str:
+    # JUCE's VST3 moduleinfo.json is emitted with trailing commas (valid for
+    # the JUCE parser, strict-invalid JSON). Tolerate it here.
+    out, i, in_str, esc = [], 0, False, False
+    while i < len(text):
+        ch = text[i]
+        if in_str:
+            out.append(ch)
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            i += 1
+            continue
+        if ch == '"':
+            in_str = True
+            out.append(ch)
+            i += 1
+            continue
+        if ch == ",":
+            j = i + 1
+            while j < len(text) and text[j] in " \t\r\n":
+                j += 1
+            if j < len(text) and text[j] in "}]":
+                i += 1  # drop the comma
+                continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def check_json(path: Path, required: set[str] | None = None) -> list[str]:
     problems = []
     try:
-        data = json.loads(path.read_text())
+        text = path.read_text()
+        if path.name == "moduleinfo.json":
+            text = _strip_trailing_commas(text)
+        data = json.loads(text)
     except (json.JSONDecodeError, OSError) as exc:
         return [f"{path.name}: invalid json: {exc}"]
     if required is not None and not required.issubset(set(data)):

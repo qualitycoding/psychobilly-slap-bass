@@ -87,3 +87,19 @@ threshold.
     the frozen adapter's `round` — the two differ by one frame for
     half-sample document durations (e.g. demo renders), which broke the raw
     float64 reshape in `render()`.
+
+## 13. VST3 moduleinfo.json is not strict JSON
+
+JUCE 9.0.5 emits `moduleinfo.json` inside the `.vst3` bundle with trailing
+commas. The JUCE-side parser accepts this, but strict `json.loads` rejects it.
+`scripts/verify_artifacts.py` now strips trailing commas (outside strings)
+before parsing any file named `moduleinfo.json`, keeping strict validation
+for every other JSON artifact.
+
+## 14. Windows CLI executables statically link the MSVC runtime
+
+Git Bash maps a missing `vcruntime140*.dll` to exit code 127 with no output,
+which killed the renderer smoke step on `windows-2025`. `CMakeLists.txt`
+sets `CMAKE_MSVC_RUNTIME_LIBRARY` to `MultiThreaded` for all targets when
+`MSVC` is true, so `psychobilly-render`, `psychobilly-perf` and
+`psb-plugin-info` start on stock runner images.
