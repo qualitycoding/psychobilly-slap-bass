@@ -88,6 +88,17 @@ jobs:
           echo "exe: $exe"
           "$exe" --probe
 
+      - name: Executable startup diagnostics (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          for e in $(find build -maxdepth 2 -type f \( -name '*.exe' \) | sort); do
+            echo "== $e"
+            objdump -p "$e" 2>/dev/null | grep 'DLL Name' | head -8 || true
+            "$e" --probe > /tmp/out.txt 2>&1 || echo "exit=$?"
+            head -c 300 /tmp/out.txt || true
+          done
+
       - name: CTest (probe + demo smoke)
         shell: bash
         run: ctest --test-dir build -C Release --output-on-failure
