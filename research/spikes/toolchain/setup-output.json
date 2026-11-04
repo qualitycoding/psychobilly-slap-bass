@@ -1,0 +1,25 @@
+{
+  "python": "3.12.12",
+  "package_index": "https://pypi.org/simple",
+  "main": {
+    "cmake": "3.31.6",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "soundfile": "0.13.1",
+    "cmake_version_output": "cmake version 3.31.6"
+  },
+  "oldest": {
+    "cmake": "3.22.4",
+    "cmake_version_output": "cmake version 3.22.4"
+  },
+  "pluginval": {
+    "version": "1.0.4",
+    "version_exit_code": 0,
+    "help_exit_code": 0
+  },
+  "notes": [
+    "PyPI packages installed successfully with pip --target.",
+    "CMake data directories were staged to /tmp and executable bits restored before invocation.",
+    "The configured mirror pypi.mirrors.msh.team did not resolve; pypi.org is the verified alternative."
+  ]
+}

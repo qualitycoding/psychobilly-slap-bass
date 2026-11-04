@@ -300,9 +300,9 @@
     },
     {
       "id": "C-010",
-      "claim": "Upright slap-bass performance has at least two acoustically distinct output sources: fingerboard/contact sound for the slap and F-hole radiation for the pitched component.",
+      "claim": "A practitioner source distinguishes fingerboard/contact sound and F-hole radiation when recording upright slap bass; this single-source observation is not treated as an established acoustic requirement.",
       "kind": "bibliographic",
-      "load_bearing": true,
+      "load_bearing": false,
       "tags": [
         "domain:audio",
         "subject:upright-slap-bass-acoustics"
@@ -322,9 +322,7 @@
       "evidence_class": "n/a",
       "contradicted_by": [],
       "informs": [
-        "D-004",
-        "S-DSP",
-        "S-LISTEN"
+        "D-004"
       ]
     },
     {
@@ -421,6 +419,167 @@
       "informs": [
         "T-ANALYSER",
         "S-ANALYSER-SPIKE"
+      ]
+    },
+    {
+      "id": "C-014",
+      "claim": "The selected GitHub Action release tags resolve to immutable commits recorded in research/spikes/toolchain/action-pins.json.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:github-actions",
+        "subject:ci-action-pins"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/toolchain/action-pins.json",
+          "doi": "",
+          "title": "Local action tag-to-commit verification",
+          "version": "2026-11-04",
+          "locator": "actions/checkout v7.0.1, setup-python v7.1.0, upload-artifact v7.0.2, download-artifact v8.0.2, cache v6.1.0",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "GitHub API/local evidence"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "plan/ENVIRONMENT.md",
+        "S-CI"
+      ]
+    },
+    {
+      "id": "C-015",
+      "claim": "The Linux, Windows and macOS pluginval v1.0.4 release archives were downloaded and their byte counts and SHA-256 hashes are recorded for CI integrity checks.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:pluginval",
+        "tech:github-actions"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/toolchain/pluginval-archives.json",
+          "doi": "",
+          "title": "Local pluginval archive verification",
+          "version": "v1.0.4",
+          "locator": "Linux, Windows and macOS url, bytes and sha256 fields",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Tracktion release artifacts/local evidence"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-005",
+        "plan/ENVIRONMENT.md",
+        "S-HOST"
+      ]
+    },
+    {
+      "id": "C-016",
+      "claim": "CMake 3.31.6 and oldest-candidate CMake 3.22.4 both executed successfully after complete data-tree staging; NumPy 2.2.6, SciPy 1.15.3 and SoundFile 0.13.1 installed from the public PyPI index, and pluginval v1.0.4 --version and --help exited zero.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:cmake",
+        "tech:python",
+        "subject:toolchain-setup"
+      ],
+      "sources": [
+        {
+          "url": "research/spikes/toolchain/setup-output.json",
+          "doi": "",
+          "title": "Local pinned toolchain setup evidence",
+          "version": "2026-11-04",
+          "locator": "python, package_index, main, oldest and pluginval fields",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "Local empirical verification"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-010",
+        "plan/ENVIRONMENT.md",
+        "S-000"
+      ]
+    },
+    {
+      "id": "C-017",
+      "claim": "JUCE 9.0.5 AudioProcessor provides BusesProperties construction, float and double processBlock overloads, pure virtual createEditor/hasEditor, isBusesLayoutSupported, and XML state helpers; a host-parameter-only processor may report no editor and return nullptr from createEditor.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:processor-contract"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/modules/juce_audio_processors_headless/processors/juce_AudioProcessor.h",
+          "doi": "",
+          "title": "JUCE 9.0.5 AudioProcessor.h",
+          "version": "9.0.5",
+          "locator": "lines 65–83, 221, 292, 1006–1034, 1149–1204, 1403–1415 and 1432",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "JUCE"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-007",
+        "T-HOST",
+        "S-HOST"
+      ]
+    },
+    {
+      "id": "C-018",
+      "claim": "JUCE 9.0.5 APVTS getRawParameterValue returns std::atomic<float>* for realtime reads, while copyState and replaceState take locks and are explicitly forbidden in audio processing code.",
+      "kind": "software",
+      "load_bearing": true,
+      "tags": [
+        "tech:juce",
+        "subject:realtime-state"
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/modules/juce_audio_processors/utilities/juce_AudioProcessorValueTreeState.h",
+          "doi": "",
+          "title": "JUCE 9.0.5 AudioProcessorValueTreeState.h",
+          "version": "9.0.5",
+          "locator": "lines 340–346 and 378–404",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "JUCE"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/juce-framework/JUCE/d60b7a78030661574a615b586d9325ba7a7fa7dd/modules/juce_audio_processors/utilities/juce_AudioProcessorValueTreeState.cpp",
+          "doi": "",
+          "title": "JUCE 9.0.5 AudioProcessorValueTreeState.cpp",
+          "version": "9.0.5",
+          "locator": "lines 381–403: atomic adapter access and ScopedLock in copyState/replaceState",
+          "accessed": "2026-11-04",
+          "tier": 1,
+          "publisher": "JUCE"
+        }
+      ],
+      "confidence": "verified",
+      "evidence_class": "n/a",
+      "contradicted_by": [],
+      "informs": [
+        "D-008",
+        "T-REALTIME",
+        "S-STATE"
       ]
     }
   ]

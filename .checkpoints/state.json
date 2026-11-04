@@ -1,7 +1,7 @@
 {
   "run_id": "20261103T230504Z-psychobilly-slap-bass",
   "branch": "gen-20261103T230504Z-psychobilly-slap-bass",
-  "sequence": 4,
+  "sequence": 5,
   "profiles": [
     "software"
   ],
@@ -11,9 +11,9 @@
     "courseware": false
   },
   "phase": "1",
-  "subphase": "1.3 R3 complete",
-  "active_step_id": "R4",
-  "research_round": 3,
+  "subphase": "1.4 R4 complete",
+  "active_step_id": "R5",
+  "research_round": 4,
   "exploration_round": 0,
   "proof_review_round": 0,
   "premortem_round": 0,
@@ -25,10 +25,10 @@
     "R0 prior knowledge",
     "R1 decomposition",
     "R2 breadth research",
-    "R3 synthesis and gap analysis"
+    "R3 synthesis and gap analysis",
+    "R4 depth verification"
   ],
   "pending": [
-    "R4 depth verification",
     "R5 adversarial review",
     "R6 empirical verification"
   ],
@@ -42,11 +42,11 @@
   "artifacts": {
     "plan/PROFILE.md": "6787f0e4d353d1d49ad30030726288816cd23835c9b10570dee88dc1205333da",
     "plan/ASSUMPTIONS.md": "6d81f58860d95bccf288f6662cc9e8e36f69e98892f7bf1bcc67fbb5d5f38990",
-    "plan/DECISIONS.md": "00f7e0789cdf0f6f7a7c8f19d51bc8d979faa84bfd8726291e598321090f97e3",
+    "plan/DECISIONS.md": "921acd7fbb8588a9009c0c5afc26f020263b720dd6922ff666a6a916de8b5855",
     "research/PRIOR_KNOWLEDGE.md": "6dde3b8e019cfd7787aac047082e8867e4709a140b81f74991d95473110c72b6",
-    "research/claims.json": "b71456842ea68f0f249f1e711f603cd14c55b36b497e9806b9619425180ecad5",
+    "research/claims.json": "92a83d58986ef4e2df0c18c401c12c3de490e8564c4719c16bce32444929d40e",
     "research/QUESTIONS.md": "e65b89e5e9f175cc660cd6a6808f698eb48959595ba2dea187147f4db253a8ef",
-    "research/SOURCES.md": "7f5da55513f32b51b75fe06c0a7a80ff44a8504fa34972fa32a53c02a526cbbf",
+    "research/SOURCES.md": "3f0b3fe937a806a188e0413ffdf11700efb5dbdcead863d34d9e4ed97b15e551",
     "research/rounds/round-2.md": "d22bec940629eb142d75ede69e6c41d4034bf01c0fcb5821e6322f672b56cff7",
     "research/reference-candidates/manifest.json": "959435153ceb1e20d76cc0a7971272e4bf6b6f33ef38623fff9fc8f49a59a223",
     "research/reference-candidates/analysis.json": "73dc63b692ca43e8d178871bac531fc06877489f1d8f329b7579c562939eec45",
@@ -62,7 +62,20 @@
     "knowledge/K-20261104T003011Z-vsco-cc0-pizzicato-candidates.md": "68564bdb8025e3e1daf156404ea3b6672f06dbad7f062dca8955d57b6236c768",
     "knowledge/K-20261104T003012Z-pizzicato-reference-not-slap-evidence.md": "d4ea6c8fcae7a0b971817b820406a1ecddd6716d3151f2a413eda06c49ddeb83",
     "knowledge/K-20261104T003013Z-second-harmonic-dominates-reference-fft.md": "3eb65db46e9e7131025f33e2a581834b112d37f0ef289490e0987eb385250a9c",
-    "research/rounds/round-3.md": "3fefaf6a5d0948e71f7bffbf17ebea4eac8d1c20f74e392aff7f47929e8142a1"
+    "research/rounds/round-3.md": "3fefaf6a5d0948e71f7bffbf17ebea4eac8d1c20f74e392aff7f47929e8142a1",
+    "research/rounds/round-4.md": "d2deae8d0a5c5a2e1290d1cf9651ec201e3e6396d629effb1cd5ff9615b4affb",
+    "research/spikes/toolchain/action-pins.json": "aea0769ef32b0b293166f736cff8a871bfce2a07fcddf6fc6cd323a8a125020c",
+    "research/spikes/toolchain/pluginval-archives.json": "23edb9dff83759103a41cdad2a878a3468b16c18f207acea9435338f61c41436",
+    "research/spikes/toolchain/pluginval-help.txt": "746286989490e388b7c6d5aebc0ab70892d185ad21cc1ebed0a8d7d600d163c5",
+    "research/spikes/toolchain/setup-output.json": "16a13e8b2e8732c97cd7be1e817218ae17d586094114a802317b0f1f153917ce",
+    "knowledge/K-20261104T004200Z-upright-slap-source-qualified.md": "102304c9d90f9e52bba47fa4417a9713ecd3751f29a6716325e9c878fd876ac8",
+    "knowledge/K-20261104T004300Z-immutable-github-action-pins.md": "0f2c664b48e967a65567b7d1b4d9ca11939bed407c2f668eb22158d92e15b8bb",
+    "knowledge/K-20261104T004400Z-pluginval-archive-integrity.md": "ea9bd3603fb7f0fa9784b904da944e50e84c224d120e3f832e5360c3fa89e219",
+    "knowledge/K-20261104T004500Z-pinned-toolchain-staging.md": "8c28a5beebcd58ce6d449585f765442d2a2c6d3f7eade672de6a9a6bf0656b25",
+    "knowledge/K-20261104T004600Z-juce-host-only-processor-contract.md": "979ac272a2011ecf8197e952f5c3b0165a1b8bb7d2d8cde503f5741caa0e9a2c",
+    "knowledge/K-20261104T004700Z-apvts-state-not-realtime-safe.md": "daefad8fc6349198396ccf239a5548aadf33085a1fb2281cc1d716037795b6e9",
+    "lessons/L-20261104T004000Z-configured-package-index-unreachable.md": "95705864d45387c731d359548874cf832d27f03b1ee3ae06a29650754d439128",
+    "lessons/L-20261104T004100Z-cmake-package-needs-data-and-exec-bits.md": "e6df8263f96a08808c014e4b14965aa9f9dde96c49fb6093ec7320082445ba0e"
   },
   "execution_context": {
     "current_objective": "Produce a zero-question software+audio implementation plan for a JUCE 9 psychobilly slap-double-bass VST3.",
@@ -71,12 +84,12 @@
     ],
     "step_pointer": {
       "phase": "1",
-      "subphase": "R4",
+      "subphase": "R5",
       "item_index": 0,
-      "sub_action": "1.3 R3 complete",
+      "sub_action": "1.4 R4 complete",
       "retry_count": 0
     },
-    "scratchpad": "R3 found C-010 below bar and isolated CI/API/DSP/listening gaps for R4–R6.",
+    "scratchpad": "R4 closed C-010 as non-load-bearing and verified action/toolchain/JUCE interface contracts; R5 adversarial research next.",
     "in_flight_operation": null,
     "tool_cache": {
       "subagents": false,
@@ -133,8 +146,7 @@
     }
   ],
   "open_items": [
-    "Corroborate or qualify C-010",
-    "Verify immutable CI/setup pins",
+    "Challenge pluginval, JUCE, CI, DSP and listening assumptions adversarially",
     "Compile and measure architecture/control/performance spikes"
   ],
   "lesson_store": {
@@ -254,7 +266,9 @@
   "lessons_recorded": [
     "L-20261103T231200Z-credentials-in-command-lines",
     "L-20261103T231500Z-credential-cache-socket-mount",
-    "L-20261104T000900Z-stale-git-index-lock-after-mount-error"
+    "L-20261104T000900Z-stale-git-index-lock-after-mount-error",
+    "L-20261104T004000Z-configured-package-index-unreachable",
+    "L-20261104T004100Z-cmake-package-needs-data-and-exec-bits"
   ],
   "knowledge_added": [
     "K-20261104T003002Z-juce-9-agpl-commercial-license",
@@ -268,7 +282,13 @@
     "K-20261104T003010Z-upright-slap-two-output-sources",
     "K-20261104T003011Z-vsco-cc0-pizzicato-candidates",
     "K-20261104T003012Z-pizzicato-reference-not-slap-evidence",
-    "K-20261104T003013Z-second-harmonic-dominates-reference-fft"
+    "K-20261104T003013Z-second-harmonic-dominates-reference-fft",
+    "K-20261104T004200Z-upright-slap-source-qualified",
+    "K-20261104T004300Z-immutable-github-action-pins",
+    "K-20261104T004400Z-pluginval-archive-integrity",
+    "K-20261104T004500Z-pinned-toolchain-staging",
+    "K-20261104T004600Z-juce-host-only-processor-contract",
+    "K-20261104T004700Z-apvts-state-not-realtime-safe"
   ],
-  "updated_at": "2026-11-03T23:36:14Z"
+  "updated_at": "2026-11-04T00:48:00Z"
 }
