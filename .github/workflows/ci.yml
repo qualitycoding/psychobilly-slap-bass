@@ -86,18 +86,16 @@ jobs:
         run: |
           exe=$(find build -type f \( -name 'psychobilly-render' -o -name 'psychobilly-render.exe' \) | head -1)
           echo "exe: $exe"
-          "$exe" --probe
-
-      - name: Executable startup diagnostics (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          for e in $(find build -maxdepth 2 -type f \( -name '*.exe' \) | sort); do
-            echo "== $e"
-            objdump -p "$e" 2>/dev/null | grep 'DLL Name' | head -8 || true
-            "$e" --probe > /tmp/out.txt 2>&1 || echo "exit=$?"
-            head -c 300 /tmp/out.txt || true
-          done
+          if ! out=$("$exe" --probe 2>&1); then
+            rc=$?
+            echo "probe failed (exit $rc); output: [$out]"
+            if [ "$RUNNER_OS" = "Windows" ]; then
+              echo "== linked DLLs =="
+              objdump -p "$exe" 2>/dev/null | grep 'DLL Name' || true
+            fi
+            exit "$rc"
+          fi
+          echo "$out" | head -20
 
       - name: CTest (probe + demo smoke)
         shell: bash
@@ -246,7 +244,9 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: cmake-min-build
-          path: build/build.ninja
+          # The 3.22.4 default generator on ubuntu is Unix Makefiles, so
+          # build.ninja does not exist; CMakeCache.txt always does.
+          path: build/CMakeCache.txt
           if-no-files-found: error
 
   demos:
