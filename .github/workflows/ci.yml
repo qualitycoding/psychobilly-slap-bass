@@ -87,18 +87,24 @@ jobs:
         run: |
           set +e
           exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
+          wexe=$(cygpath -w "$PWD/$exe")
+          src=$(cygpath -m "$GITHUB_WORKSPACE/src")
           echo "== true exit code via powershell =="
-          pwsh -NoProfile -Command "$p = Start-Process -FilePath '$PWD/$exe' -ArgumentList '--probe' -Wait -PassThru -RedirectStandardOutput $env:TEMP\\psb-ps.out -RedirectStandardError $env:TEMP\\psb-pserr.out; 'powershell-exitcode=' + $p.ExitCode"
-          head -c 300 "$TEMP/psb-ps.out" 2>/dev/null || head -c 300 /c/Users/RUNNER~1/AppData/Local/Temp/psb-ps.out 2>/dev/null || true
-          echo
+          ps1="$TEMP/psb-probe.ps1"
+          echo "\$p = Start-Process -FilePath '$wexe' -ArgumentList '--probe' -Wait -PassThru -RedirectStandardOutput '$TEMP/psb-ps.out' -RedirectStandardError '$TEMP/psb-pserr.out'" > "$ps1"
+          echo "Write-Output ('exitcode=' + \$p.ExitCode)" >> "$ps1"
+          pwsh -NoProfile -File "$(cygpath -w "$ps1")"
+          echo "-- stdout --"; head -c 300 "$TEMP/psb-ps.out" 2>/dev/null; echo
+          echo "-- stderr --"; head -c 300 "$TEMP/psb-pserr.out" 2>/dev/null; echo
           echo "== standalone build of same TU, /MD =="
-          mkdir -p /tmp/psbtest-md && printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbtest CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(psbtest-render "$GITHUB_WORKSPACE/src/psychobilly_render.cpp")" "target_include_directories(psbtest-render PRIVATE "$GITHUB_WORKSPACE/src")" 'target_compile_definitions(psbtest-render PRIVATE PSB_GIT_COMMIT="diag")' > /tmp/psbtest-md/CMakeLists.txt
-          cmake -S /tmp/psbtest-md -B /tmp/psbtest-md/b > /dev/null && cmake --build /tmp/psbtest-md/b --config Release 2>&1 | tail -1
-          /tmp/psbtest-md/b/Release/psbtest-render.exe --probe > /tmp/md.out 2>&1; echo "md rc=$?"; head -c 200 /tmp/md.out
-          echo "== standalone build of same TU, /MT =="
-          mkdir -p /tmp/psbtest-mt && cp /tmp/psbtest-md/CMakeLists.txt /tmp/psbtest-mt/
-          cmake -S /tmp/psbtest-mt -B /tmp/psbtest-mt/b -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded > /dev/null && cmake --build /tmp/psbtest-mt/b --config Release 2>&1 | tail -1
-          /tmp/psbtest-mt/b/Release/psbtest-render.exe --probe > /tmp/mt.out 2>&1; echo "mt rc=$?"; head -c 200 /tmp/mt.out
+          for rt in MD MT; do
+            d="/tmp/psbtest-$rt"
+            mkdir -p "$d"
+            printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbtest CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(psbtest-render $src/psychobilly_render.cpp)" "target_include_directories(psbtest-render PRIVATE $src)" 'target_compile_definitions(psbtest-render PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
+            [ "$rt" = MT ] && extra=-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded || extra=
+            cmake -S "$d" -B "$d/b" $extra > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -1
+            "$d/b/Release/psbtest-render.exe" --probe > "/tmp/$rt.out" 2>&1; echo "$rt rc=$?"; head -c 200 "/tmp/$rt.out"; echo
+          done
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
