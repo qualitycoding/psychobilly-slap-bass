@@ -1,0 +1,3 @@
+# Frozen contracts are hash-verified byte-for-byte (tests/FROZEN_MANIFEST.sha256);
+# a CRLF checkout on Windows corrupts every hash. Force LF for all text.
+* text=auto eol=lf
