@@ -1,0 +1,27 @@
+{
+  "controls": {
+    "attack_noise": 0.2,
+    "body_resonance": 0.45,
+    "mechanical_noise": 0.15,
+    "output_level": 0.75,
+    "pluck_slap": 0.35,
+    "slap_brightness": 0.55,
+    "string_tension": 0.5,
+    "sustain": 0.7
+  },
+  "environment_lock_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "event_sha256": "9e6016a536641c40d794966081b1695aafbb7f0438b3a84758da77d0c7df293f",
+  "frames": 331816,
+  "git_commit": "unknown",
+  "hardware": "Linux/unknown",
+  "input_sha256": "45928995553c6765893014bdd455aca3adde456753f2bac1fc62f1fd96de836b",
+  "normalisation_applied": false,
+  "peak": 0.011224,
+  "rms": 0.001248,
+  "sample_rate": 48000,
+  "schema": 1,
+  "seed": 852229,
+  "thread_count": 2,
+  "utc_timestamp": "2026-11-05T15:21:10Z",
+  "wav_sha256": "05f3775ed08b9cc06e72e0d5001854444c505b3d92f2cbfacdcf4003f29b3bc9"
+}
