@@ -153,3 +153,17 @@ reference clips verified >= 0.999 correlated against the sources. Note:
 running the frozen T-050 locally regenerates build/listening/round-1 with the
 corrected decoder, so the local round-1 directory no longer matches the pushed
 (invalidated) round-1 branch — the pushed branch is the historical record.
+
+## 19. G-004 iterate — ordinary-pluck timbre retune (round 3 candidate)
+
+Round-2 listening: 12/12 reference identification + "sounded like piano".
+Root cause measured: candidate centroid was ~440 Hz for every note (fixed
+525 Hz radiation filter erased pitch-scaled spectral bloom) with t60 ~2.4 s
+(piano-like ring) and a softened excitation transient. Retuned inside
+StringInstance (mix path, D-021 control mappings and all frozen contracts
+untouched): radiation cutoff now pitch-scaled (clamp(300+6*f0, 350, 2800) *
+(0.75+0.5*tension)); t60 base 0.35 -> 0.20 (still monotonic in sustain);
+excitation one-pole 0.30 -> 0.42 (brighter pizz transient). Candidate centroid
+now scales with pitch (F#0 516 / A1 564 / G#2 687 Hz). Frozen suite 20/20
+green, RTF 0.04 <= 0.25. Latent quirk observed (not in scope, unchanged):
+a note_on with no matching note_off within the render produces silence.

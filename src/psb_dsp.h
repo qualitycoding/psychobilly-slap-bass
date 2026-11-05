@@ -149,16 +149,18 @@ public:
         for (int i = 0; i < lineSize_; ++i) {
             const float comb = noise[static_cast<std::size_t>((i + shift) % lineSize_)];
             const float x = 0.32f * velocity_ * (noise[static_cast<std::size_t>(i)] - 0.65f * comb);
-            lp = 0.30f * x + 0.70f * lp;
+            lp = 0.42f * x + 0.58f * lp;
             line_[static_cast<std::size_t>(i)] = lp;
         }
 
-        const float t60 = 0.35f * std::pow(12.0f, controls_.sustain);
+        const float t60 = 0.20f * std::pow(12.0f, controls_.sustain);
         loopGain_ = std::min(0.99995f, std::pow(10.0f, -3.0f / (frequency_ * t60)));
         filterAlpha_ = 0.35f + 0.25f * controls_.string_tension;
         threshold_ = std::max(0.035f, 0.27f - 0.105f * velocity_ - 0.045f * controls_.string_tension);
 
-        radiation_ = Biquad::butterworth2(350.0f + 350.0f * controls_.string_tension, sampleRate_);
+        const float radCut = std::clamp(300.0f + 6.0f * frequency_, 350.0f, 2800.0f)
+                           * (0.75f + 0.50f * controls_.string_tension);
+        radiation_ = Biquad::butterworth2(radCut, sampleRate_);
         body1_ = Biquad::iirPeak(82.0f, 1.1f, sampleRate_);
         body2_ = Biquad::iirPeak(190.0f, 1.8f, sampleRate_);
         body3_ = Biquad::iirPeak(430.0f, 2.2f, sampleRate_);
