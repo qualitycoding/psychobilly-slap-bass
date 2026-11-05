@@ -110,17 +110,21 @@ jobs:
         shell: bash
         run: |
           # stubs/psb_contract.py resolves binaries by extensionless name via
-          # PSB_BUILD_DIR; Windows executables are *.exe. Stage copies under
-          # both names (CreateProcess appends .exe for the extensionless path).
-          mkdir -p build/psb-bin
-          for f in build/Release/psychobilly-render* build/Release/psychobilly-perf*; do
-            [ -f "$f" ] || continue
-            cp "$f" build/psb-bin/
-          done
-          for f in build/psb-bin/*.exe; do
-            [ -f "$f" ] || continue
-            cp "$f" "build/psb-bin/$(basename "$f" .exe)"
-          done
+          # PSB_BUILD_DIR; Windows executables are *.exe and MSYS path magic
+          # equates "foo" with "foo.exe", so stage with Python (exact Win32
+          # names) under both names.
+          python - <<'PYEOF'
+          import pathlib, shutil
+          src = pathlib.Path("build/Release")
+          dst = pathlib.Path("build/psb-bin")
+          dst.mkdir(exist_ok=True)
+          for f in sorted(src.glob("psychobilly-*.exe")):
+              shutil.copy2(f, dst / f.name)
+              target = dst / f.stem
+              if not target.exists():
+                  shutil.copy2(f, target)
+                  print("staged", target)
+          PYEOF
           ls -la build/psb-bin
 
       - name: Frozen contract tests
