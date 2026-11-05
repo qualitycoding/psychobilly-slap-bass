@@ -457,14 +457,30 @@ import wave
 def _wav_clip(path: Path, seconds: float = 1.0) -> np.ndarray:
     with wave.open(str(path), "rb") as w:
         sr = w.getframerate()
+        width = w.getsampwidth()
+        channels = w.getnchannels()
         n = min(int(seconds * sr), w.getnframes())
         frames = w.readframes(n)
-    x = np.frombuffer(frames, dtype=np.int32 if len(frames) % 8 == 0 else np.int16)
-    # 24-bit PCM is read as raw bytes; decode manually.
-    raw = np.frombuffer(frames, dtype=np.uint8).reshape(-1, 3)
-    vals = (raw[:, 0].astype(np.int32) | (raw[:, 1].astype(np.int32) << 8) | (raw[:, 2].astype(np.int32) << 16))
-    vals = np.where(vals >= 1 << 23, vals - (1 << 24), vals)
-    return vals.astype(np.float64) / 8388608.0
+    # Decode by the header's actual sample width. The VSCO 2 CE references are
+    # 16-bit PCM; decoding them as 24-bit byte triples produced white-noise
+    # clips (blind round 1 was invalidated by this defect).
+    if width == 2:
+        vals = np.frombuffer(frames, dtype=np.int16).astype(np.int32)
+        scale = 32768.0
+    elif width == 3:
+        raw = np.frombuffer(frames, dtype=np.uint8).reshape(-1, 3)
+        vals = (raw[:, 0].astype(np.int32) | (raw[:, 1].astype(np.int32) << 8) | (raw[:, 2].astype(np.int32) << 16))
+        vals = np.where(vals >= 1 << 23, vals - (1 << 24), vals)
+        scale = 8388608.0
+    elif width == 4:
+        vals = np.frombuffer(frames, dtype=np.int32)
+        scale = 2147483648.0
+    else:
+        raise ValueError(f"unsupported sample width {width}")
+    x = vals.astype(np.float64) / scale
+    if channels > 1:
+        x = x.reshape(-1, channels).mean(axis=1)
+    return x
 
 
 def _rms_dbfs(x: np.ndarray) -> float:
@@ -560,7 +576,9 @@ def make_blind_pairs(reference_dir: str, candidate_dir: str, output_dir: str, se
             p = pairs_dir / f"pair-{index + 1:02d}-{side}.wav"
             _write_wav24(p, clip, sample_rate)
             sha_lines.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}")
-        attribution.append(f"pair {index + 1:02d}: label={label} reference_on={'A' if sides[index] == 'A' else 'B'} (sealed)")
+        # S-100: the listener-facing sheet must not disclose the side
+        # assignment; only the sealed key carries it (post-answer disclosure).
+        attribution.append(f"pair {index + 1:02d}: label={label}")
 
     # Demos: render the ten D-024 event files.
     demos_dir = output_path / "demos"

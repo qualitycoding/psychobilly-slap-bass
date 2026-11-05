@@ -61,3 +61,12 @@ suite now exercises all four paths green on all runners.
 - `main-enter` diagnostic retained until after G-004.
 
 **Counts:** Critical 0, High 0, Medium 0 unresolved, Low 2 accepted.
+
+## Addendum (G-004 round 1)
+
+The human listener's 0/12-with-perfect-inversion + "white noise" report
+confirmed break #9: the evidence generator itself was adversarially broken —
+16-bit references decoded as 24-bit (audible white noise) and the answer key
+printed on the listener-facing sheet. Both fixed (DEVIATIONS #18); round 2
+verified >= 0.999 source correlation and re-issued. Confirmed breaks now: 6,
+all fixed; still 0 unresolved High.

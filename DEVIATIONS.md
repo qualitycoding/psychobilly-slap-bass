@@ -131,3 +131,25 @@ stubs/psb_contract.py resolves `psychobilly-render`/`psychobilly-perf` by
 extensionless name. Windows produces `.exe`; MSYS path magic equates `foo` and
 `foo.exe`, so CI stages both names with Python (exact Win32 names) in
 build/psb-bin and points PSB_BUILD_DIR at it.
+
+## 18. G-004 round 1 invalidated — reference clips decoded as white noise; answer key on the listener sheet
+
+The blind-listening bundle generator (stubs/psb_contract.py, unmarked adapter)
+had two defects. First, `_wav_clip` decoded every WAV as 24-bit byte triples;
+the VSCO 2 CE references are 16-bit PCM, so every reference clip was
+byte-misaligned noise (verified: correlation ~0.00 with the source recordings;
+the round-1 listener uniformly described that side as "white noise" and
+answered 0/12 — the exact complement of the sealed sides, since the only
+non-noise side was picked every time). Second, ATTRIBUTION.md — part of the
+listener-facing bundle — disclosed `reference_on=A/B` per pair in plaintext,
+voiding the blinding (S-100 requires the sheet to disclose nothing until
+answers are recorded).
+
+Fix (red -> fix, no hash-frozen file touched): `_wav_clip` now dispatches on
+`wave.getsampwidth()` (16/24/32-bit) and downmixes channels; the listener
+sheet now lists only the pair label. Round-1 evidence branch retained as
+invalidated history; round 2 pushed as evidence/G-004-round-2 with all 12
+reference clips verified >= 0.999 correlated against the sources. Note:
+running the frozen T-050 locally regenerates build/listening/round-1 with the
+corrected decoder, so the local round-1 directory no longer matches the pushed
+(invalidated) round-1 branch — the pushed branch is the historical record.
