@@ -106,8 +106,27 @@ jobs:
         shell: bash
         run: ctest --test-dir build -C Release --output-on-failure
 
+      - name: Stage extensionless binaries (frozen stub contract)
+        shell: bash
+        run: |
+          # stubs/psb_contract.py resolves binaries by extensionless name via
+          # PSB_BUILD_DIR; Windows executables are *.exe. Stage copies under
+          # both names (CreateProcess appends .exe for the extensionless path).
+          mkdir -p build/psb-bin
+          for f in build/Release/psychobilly-render* build/Release/psychobilly-perf*; do
+            [ -f "$f" ] || continue
+            cp "$f" build/psb-bin/
+          done
+          for f in build/psb-bin/*.exe; do
+            [ -f "$f" ] || continue
+            cp "$f" "build/psb-bin/$(basename "$f" .exe)"
+          done
+          ls -la build/psb-bin
+
       - name: Frozen contract tests
         shell: bash
+        env:
+          PSB_BUILD_DIR: build/psb-bin
         run: |
           python scripts/verify_freeze.py
           python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee build/frozen-tests.log
@@ -118,7 +137,8 @@ jobs:
           python - <<'PYEOF'
           import json, os, subprocess, sys, platform, hashlib
           from pathlib import Path
-          binary = next(Path("build").rglob("psychobilly-perf*"))
+          binary = next(p for p in Path("build").rglob("psychobilly-perf*")
+                        if p.suffix in ("", ".exe"))
           env = dict(os.environ); env["GITHUB_ACTIONS"] = "true"
           result = subprocess.run([str(binary), "--sample-rate", "96000",
               "--block-size", "64", "--voices", "8", "--seconds", "5",
