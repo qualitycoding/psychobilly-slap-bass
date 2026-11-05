@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "timestamp": "2026-11-05T23:30Z",
+  "agent": "implementation agent (S-090 step 3)",
+  "cases": [
+    {
+      "case": "malformed JSONL",
+      "result": "rc=2 fail-closed"
+    },
+    {
+      "case": "deeply nested JSON (10000 levels)",
+      "result": "rc=2 fail-closed, no crash"
+    },
+    {
+      "case": "excessive render_seconds",
+      "result": "rc=2 fail-closed"
+    },
+    {
+      "case": "unwritable output path",
+      "result": "rc=2 fail-closed"
+    },
+    {
+      "case": "missing input file",
+      "result": "rc=3 fail-closed"
+    },
+    {
+      "case": "invalid sample rate",
+      "result": "rc=2 fail-closed"
+    },
+    {
+      "case": "event beyond render length",
+      "result": "rc=2 fail-closed"
+    }
+  ],
+  "conclusion": "renderer fails closed on all hostile inputs tested; bounded resources; no panics observed"
+}
