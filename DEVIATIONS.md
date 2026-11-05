@@ -103,3 +103,17 @@ which killed the renderer smoke step on `windows-2025`. `CMakeLists.txt`
 sets `CMAKE_MSVC_RUNTIME_LIBRARY` to `MultiThreaded` for all targets when
 `MSVC` is true, so `psychobilly-render`, `psychobilly-perf` and
 `psb-plugin-info` start on stock runner images.
+
+## 15. `psb::Engine` (~3.5 MB) must not live on the stack of CLI entry points
+
+Root cause of the windows-2025 `psychobilly-render.exe` "exit 127 / 0xC00000FD"
+failure: `Engine` (8 slots x 4 Karplus-Strong strings of fixed-capacity storage)
+is ~3.5 MB, and the CLI tools held it as a local in `main`. Linux/macOS default
+to an 8 MB main stack and tolerate this; the Windows 1 MB default stack overflows
+in the MSVC prologue (stack probing), before the first statement of `main` runs
+- which is why no diagnostic output ever appeared. A cl.exe flag/arch matrix
+(/O2 vs /Od, /MD vs /MT, x64 vs x86) all crashed identically, ruling out
+codegen. Fix: CLI tools heap-allocate the engine (`std::make_unique`). The VST3
+processor holds `Engine` as a member of the heap-allocated plugin instance,
+which is unaffected. Diagnostics note: a `main-enter` stderr marker remains in
+`psychobilly-render` for future pre-main vs in-main triage.

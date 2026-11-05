@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -84,34 +85,34 @@ int main(int argc, char** argv) {
 
     // Declared warm-up pass (not reported).
     {
-        psb::Engine engine;
-        engine.prepare(sampleRate, controls);
+        auto engine = std::make_unique<psb::Engine>();
+        engine->prepare(sampleRate, controls);
         std::vector<psb::NoteEvent> events;
         for (int v = 0; v < voices; ++v)
             events.push_back({0, psb::NoteEvent::Type::note_on, 1, notes[v], 0.8f});
-        engine.setEvents(events);
-        engine.setSeed(0x50534c41u);
+        engine->setEvents(events);
+        engine->setSeed(0x50534c41u);
         std::vector<float> l(static_cast<std::size_t>(blockSize));
         std::vector<float> r(static_cast<std::size_t>(blockSize));
         const int blocks = static_cast<int>(0.5 * sampleRate / blockSize);
         for (int b = 0; b < blocks; ++b)
-            engine.render(l.data(), r.data(), nullptr, blockSize);
+            engine->render(l.data(), r.data(), nullptr, blockSize);
     }
 
     for (int repeat = 0; repeat < repeats; ++repeat) {
-        psb::Engine engine;
-        engine.prepare(sampleRate, controls);
+        auto engine = std::make_unique<psb::Engine>();
+        engine->prepare(sampleRate, controls);
         std::vector<psb::NoteEvent> events;
         for (int v = 0; v < voices; ++v)
             events.push_back({0, psb::NoteEvent::Type::note_on, 1, notes[v], 0.8f});
-        engine.setEvents(events);
-        engine.setSeed(0x50534c41u + static_cast<std::uint32_t>(repeat * 31));
+        engine->setEvents(events);
+        engine->setSeed(0x50534c41u + static_cast<std::uint32_t>(repeat * 31));
         std::vector<float> l(static_cast<std::size_t>(blockSize));
         std::vector<float> rr(static_cast<std::size_t>(blockSize));
         const int blocks = static_cast<int>(secondsPerRepeat * sampleRate / blockSize);
         const auto begin = std::chrono::steady_clock::now();
         for (int b = 0; b < blocks; ++b) {
-            engine.render(l.data(), rr.data(), nullptr, blockSize);
+            engine->render(l.data(), rr.data(), nullptr, blockSize);
             for (int i = 0; i < blockSize; ++i) {
                 finite = finite && std::isfinite(l[static_cast<std::size_t>(i)])
                          && std::isfinite(rr[static_cast<std::size_t>(i)]);

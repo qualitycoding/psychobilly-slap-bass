@@ -353,13 +353,13 @@ int main(int argc, char** argv) {
             last = ev.sample;
             doc.events.push_back(ev);
         }
-        psb::Engine engine;
-        engine.prepare(48000, doc.controls);
-        engine.setEvents(doc.events);
-        engine.setSeed(0x50534c41u);
+        auto engine = std::make_unique<psb::Engine>();
+        engine->prepare(48000, doc.controls);
+        engine->setEvents(doc.events);
+        engine->setSeed(0x50534c41u);
         std::vector<float> silence;
-        engine.render(nullptr, nullptr, nullptr, static_cast<int>(last + 1));
-        const auto& stats = engine.lifecycle();
+        engine->render(nullptr, nullptr, nullptr, static_cast<int>(last + 1));
+        const auto& stats = engine->lifecycle();
         std::cout << "{\n"
                   << "  \"events\": " << doc.events.size() << ",\n"
                   << "  \"max_observed_voices\": " << stats.maxObservedVoices << ",\n"
@@ -389,15 +389,15 @@ int main(int argc, char** argv) {
         return 2;
     }
 
-    psb::Engine engine;
-    engine.prepare(doc.sampleRate, doc.controls);
-    engine.setEvents(doc.events);
-    engine.setSeed(static_cast<std::uint32_t>(doc.seed));
+    auto engine = std::make_unique<psb::Engine>();
+    engine->prepare(doc.sampleRate, doc.controls);
+    engine->setEvents(doc.events);
+    engine->setSeed(static_cast<std::uint32_t>(doc.seed));
 
     std::vector<float> interleaved(static_cast<std::size_t>(frames) * 2);
     std::vector<psb::MixView> mix(static_cast<std::size_t>(frames));
     std::vector<float> left(static_cast<std::size_t>(frames)), right(static_cast<std::size_t>(frames));
-    engine.render(left.data(), right.data(), mix.data(), static_cast<int>(frames));
+    engine->render(left.data(), right.data(), mix.data(), static_cast<int>(frames));
     for (long i = 0; i < frames; ++i) {
         interleaved[static_cast<std::size_t>(i) * 2] = left[static_cast<std::size_t>(i)];
         interleaved[static_cast<std::size_t>(i) * 2 + 1] = right[static_cast<std::size_t>(i)];
