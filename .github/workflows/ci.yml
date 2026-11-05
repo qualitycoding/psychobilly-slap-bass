@@ -86,60 +86,42 @@ jobs:
         shell: bash
         run: |
           set +e
+          srcw=$(cygpath -w "$GITHUB_WORKSPACE/src")
+          tmpw=$(cygpath -w "$RUNNER_TEMP")
+          vswhere='C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe'
+          vspath=$(cmd //c "\"$vswhere\" -latest -property installationPath" | tr -d '\r')
+          vcvars="$vspath\VC\Auxiliary\Build\vcvars64.bat"
+          echo "VS=$vspath"
+          build_and_run() {
+            name=$1; shift
+            flags=$1; shift
+            echo "== $name : cl $flags =="
+            cmd //c "call \"$vcvars\" >nul 2>&1 && cl /nologo /EHsc /Fo:$tmpw\\$name.obj /Fe:$tmpw\\$name.exe $flags $srcw\\psychobilly_render.cpp /I$srcw > $tmpw\\$name-build.log 2>&1"
+            ls -la "$RUNNER_TEMP/$name.exe" 2>/dev/null || { echo "BUILD FAILED"; tail -5 "$RUNNER_TEMP/$name-build.log"; return; }
+            "$RUNNER_TEMP/$name.exe" --probe > "$RUNNER_TEMP/$name.out" 2>&1
+            echo "$name rc=$? outbytes=$(wc -c < "$RUNNER_TEMP/$name.out")"
+            head -c 200 "$RUNNER_TEMP/$name.out"; echo
+          }
+          build_and_run rO2MD "/std:c++20 /O2 /MD"
+          build_and_run rOdMD "/std:c++20 /Od /MD"
+          build_and_run rO2MT "/std:c++20 /O2 /MT"
+          build_and_run rO2MDgs "/std:c++20 /O2 /MD /GS-"
+          echo "== repro1: headers only, empty main =="
+          printf '#include "psb_engine.h"\n#include "psb_json.h"\n#include "psb_sha256.h"\n#include "psb_wav.h"\nint main(){return 0;}\n' > "$RUNNER_TEMP/repro1.cpp"
+          r1w=$(cygpath -w "$RUNNER_TEMP/repro1.cpp")
+          cmd //c "call \"$vcvars\" >nul 2>&1 && cl /nologo /std:c++20 /O2 /EHsc /MD /Fo:$tmpw\\repro1.obj /Fe:$tmpw\\repro1.exe $r1w /I$srcw > $tmpw\\repro1-build.log 2>&1"
+          "$RUNNER_TEMP/repro1.exe"; echo "repro1 rc=$?"
+          echo "== WER dump setup + run main exe =="
+          pwsh -NoProfile -Command "New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpFolder -Value '$tmpw'; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpType -Value 2; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpCount -Value 10"
           exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
-          wexe=$(cygpath -w "$PWD/$exe")
-          srcm=$(cygpath -m "$GITHUB_WORKSPACE/src")
-          echo "== PE header =="
-          objdump -x "$exe" | grep -E "Magic|Machine|StartAddress|SizeOfStack|SizeOfHeap|Subsystem|MajorOS" | head -12
-          echo "== imports =="
-          objdump -p "$exe" | grep "DLL Name" || true
-          echo "== sha before =="
-          sha256sum "$exe"
-          ps1="$RUNNER_TEMP/psb5.ps1"
-          cat > "$ps1" <<'PS1'
-          $exe = $args[0]
-          $psi = New-Object System.Diagnostics.ProcessStartInfo
-          $psi.FileName = $exe
-          $psi.Arguments = "--probe"
-          $psi.RedirectStandardOutput = $true
-          $psi.RedirectStandardError = $true
-          $psi.UseShellExecute = $false
-          $p = [System.Diagnostics.Process]::Start($psi)
-          $out = $p.StandardOutput.ReadToEnd()
-          $err = $p.StandardError.ReadToEnd()
-          $p.WaitForExit()
-          Write-Output "PSRC=$($p.ExitCode)"
-          Write-Output ("OUTLEN=" + $out.Length)
-          Write-Output ("ERRLEN=" + $err.Length)
-          PS1
-          pwsh -NoProfile -File "$(cygpath -w "$ps1")" "$wexe" | grep -E "PSRC|OUTLEN|ERRLEN"
-          echo "== sha after =="
-          sha256sum "$exe"
-          echo "== cmd with file redirect =="
-          outf="$RUNNER_TEMP/cmd5.out"; rm -f "$outf"
-          cmd //c "$wexe --probe > $(cygpath -w "$outf") & echo CMDRC=%ERRORLEVEL%"
-          echo "cmd.out bytes: $(wc -c < "$outf" 2>/dev/null || echo missing)"; head -c 300 "$outf" 2>/dev/null; echo
-          echo "== run from RUNNER_TEMP via bash =="
-          cp "$exe" "$RUNNER_TEMP/psb5.exe"
-          "$RUNNER_TEMP/psb5.exe" --probe > "$RUNNER_TEMP/t5.out" 2>&1
-          echo "temp bash rc=$? bytes=$(wc -c < "$RUNNER_TEMP/t5.out" 2>/dev/null)"
-          echo "== python subprocess (frozen-test launch mode) =="
-          WEXE="$wexe" python - <<'PYE'
-          import os, subprocess
-          r = subprocess.run([os.environ["WEXE"], "--probe"], capture_output=True)
-          print("py rc=", r.returncode, "outlen=", len(r.stdout), "err=", r.stderr[:200])
-          PYE
-          echo "== event log fault entries =="
-          pwsh -NoProfile -Command "Get-WinEvent -LogName 'Application' -MaxEvents 400 -ErrorAction SilentlyContinue | Where-Object { \$_.Message -match 'psychobilly|psb5' } | Select-Object -First 3 | Format-List TimeCreated, Id, Message | Out-String -Width 220"
-          echo "== defender =="
-          pwsh -NoProfile -Command "try { Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, AntivirusEnabled | Format-List | Out-String } catch { 'no mp status' }"
-          echo "== dual-target isolation /O2 vs /Od =="
-          d=/tmp/psbdual; rm -rf "$d"; mkdir -p "$d"
-          printf 'int main(){return 0;}\n' > "$d/hello.cpp"
-          printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbdual CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(hello $d/hello.cpp)" "add_executable(psbtest $srcm/psychobilly_render.cpp)" "target_include_directories(psbtest PRIVATE $srcm)" 'target_compile_definitions(psbtest PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
-          cmake -S "$d" -B "$d/b" > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -1
-          (cd "$d/b/Release" && ./hello.exe; echo "dual-hello rc=$?")
-          (cd "$d/b/Release" && ./psbtest.exe --probe | head -c 120; echo; echo "dual-psb rc=${PIPESTATUS[0]}")
+          "$exe" --probe > /dev/null 2>&1
+          echo "main exe rc=$?"
+          sleep 3
+          ls "$RUNNER_TEMP"/*.dmp 2>/dev/null && echo DUMP-FOUND || echo NO-DUMP
+          echo "== WER eventlog =="
+          pwsh -NoProfile -Command "Get-WinEvent -LogName 'Microsoft-Windows-Windows Error Reporting/Operational' -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, Id, Message | Out-String -Width 200" | head -20
+          echo "== look for cdb =="
+          find "/c/Program Files" "/c/Program Files (x86)" -maxdepth 6 -name "cdb.exe" 2>/dev/null | head -2
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
@@ -205,7 +187,11 @@ jobs:
             Windows) url=https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip; expect=c08e61ce3b96db41636f8ec7e76f4c7e2c13ebdac7fa1b5a1f52b4f32ec715ab; bytes=2408590 ;;
             macOS)   url=https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_macOS.zip;   expect=3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f; bytes=9202795 ;;
           esac
-          curl -fsSL --retry 5 -o pluginval.zip "$url"
+          # releases asset CDN intermittently 504s; retry with backoff
+          for i in 1 2 3 4 5 6 7 8; do
+            curl -fsSL -o pluginval.zip "$url" && break
+            echo "pluginval download attempt $i failed; retrying"; sleep 15
+          done
           actual=$(sha256sum pluginval.zip | cut -d' ' -f1)
           [ "$actual" = "$expect" ] || { echo "pluginval hash mismatch"; exit 1; }
           [ "$(wc -c < pluginval.zip | tr -d " \t")" = "$bytes" ] || { echo "pluginval byte count mismatch"; exit 1; }
