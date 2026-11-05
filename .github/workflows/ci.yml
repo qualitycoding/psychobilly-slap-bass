@@ -88,46 +88,58 @@ jobs:
           set +e
           exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
           wexe=$(cygpath -w "$PWD/$exe")
-          src=$(cygpath -m "$GITHUB_WORKSPACE/src")
-          echo "== sizes =="
-          ls -la "$exe"
-          echo "== PE headers (cmake exe) =="
-          objdump -x "$exe" 2>/dev/null | grep -E "Machine|Subsystem|magic|Start address" | head -6
-          echo "== cmd errorlevel =="
-          cmd //c "$wexe --probe & echo CMDRC=%ERRORLEVEL%" 2>&1 | head -5
-          echo "== powershell process.start =="
-          ps1="$RUNNER_TEMP/psb-probe.ps1"
+          srcm=$(cygpath -m "$GITHUB_WORKSPACE/src")
+          echo "== PE header =="
+          objdump -x "$exe" | grep -E "Magic|Machine|StartAddress|SizeOfStack|SizeOfHeap|Subsystem|MajorOS" | head -12
+          echo "== imports =="
+          objdump -p "$exe" | grep "DLL Name" || true
+          echo "== sha before =="
+          sha256sum "$exe"
+          ps1="$RUNNER_TEMP/psb5.ps1"
           cat > "$ps1" <<'PS1'
           $exe = $args[0]
-          try {
-            $psi = New-Object System.Diagnostics.ProcessStartInfo
-            $psi.FileName = $exe
-            $psi.Arguments = "--probe"
-            $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError = $true
-            $psi.UseShellExecute = $false
-            $p = [System.Diagnostics.Process]::Start($psi)
-            $out = $p.StandardOutput.ReadToEnd()
-            $err = $p.StandardError.ReadToEnd()
-            $p.WaitForExit()
-            Write-Output "PSRC=$($p.ExitCode)"
-            Write-Output "PSOUT=$out"
-            Write-Output "PSERR=$err"
-          } catch {
-            Write-Output ("PSEX=" + $_.Exception.GetType().FullName + ": " + $_.Exception.Message)
-            if ($_.Exception.InnerException) { Write-Output ("PSINNER=" + $_.Exception.InnerException.Message) }
-          }
+          $psi = New-Object System.Diagnostics.ProcessStartInfo
+          $psi.FileName = $exe
+          $psi.Arguments = "--probe"
+          $psi.RedirectStandardOutput = $true
+          $psi.RedirectStandardError = $true
+          $psi.UseShellExecute = $false
+          $p = [System.Diagnostics.Process]::Start($psi)
+          $out = $p.StandardOutput.ReadToEnd()
+          $err = $p.StandardError.ReadToEnd()
+          $p.WaitForExit()
+          Write-Output "PSRC=$($p.ExitCode)"
+          Write-Output ("OUTLEN=" + $out.Length)
+          Write-Output ("ERRLEN=" + $err.Length)
           PS1
-          pwsh -NoProfile -File "$(cygpath -w "$ps1")" "$wexe" 2>&1 | head -10
-          echo "== dual-target isolation =="
-          d=/tmp/psbdual
-          rm -rf "$d"; mkdir -p "$d"
-          printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbdual CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(hello $d/hello.cpp)" "add_executable(psbtest $src/psychobilly_render.cpp)" "target_include_directories(psbtest PRIVATE $src)" 'target_compile_definitions(psbtest PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
+          pwsh -NoProfile -File "$(cygpath -w "$ps1")" "$wexe" | grep -E "PSRC|OUTLEN|ERRLEN"
+          echo "== sha after =="
+          sha256sum "$exe"
+          echo "== cmd with file redirect =="
+          outf="$RUNNER_TEMP/cmd5.out"; rm -f "$outf"
+          cmd //c "$wexe --probe > $(cygpath -w "$outf") & echo CMDRC=%ERRORLEVEL%"
+          echo "cmd.out bytes: $(wc -c < "$outf" 2>/dev/null || echo missing)"; head -c 300 "$outf" 2>/dev/null; echo
+          echo "== run from RUNNER_TEMP via bash =="
+          cp "$exe" "$RUNNER_TEMP/psb5.exe"
+          "$RUNNER_TEMP/psb5.exe" --probe > "$RUNNER_TEMP/t5.out" 2>&1
+          echo "temp bash rc=$? bytes=$(wc -c < "$RUNNER_TEMP/t5.out" 2>/dev/null)"
+          echo "== python subprocess (frozen-test launch mode) =="
+          WEXE="$wexe" python - <<'PYE'
+          import os, subprocess
+          r = subprocess.run([os.environ["WEXE"], "--probe"], capture_output=True)
+          print("py rc=", r.returncode, "outlen=", len(r.stdout), "err=", r.stderr[:200])
+          PYE
+          echo "== event log fault entries =="
+          pwsh -NoProfile -Command "Get-WinEvent -LogName 'Application' -MaxEvents 400 -ErrorAction SilentlyContinue | Where-Object { \$_.Message -match 'psychobilly|psb5' } | Select-Object -First 3 | Format-List TimeCreated, Id, Message | Out-String -Width 220"
+          echo "== defender =="
+          pwsh -NoProfile -Command "try { Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, AntivirusEnabled | Format-List | Out-String } catch { 'no mp status' }"
+          echo "== dual-target isolation /O2 vs /Od =="
+          d=/tmp/psbdual; rm -rf "$d"; mkdir -p "$d"
           printf 'int main(){return 0;}\n' > "$d/hello.cpp"
-          cmake -S "$d" -B "$d/b" > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -2
+          printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbdual CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(hello $d/hello.cpp)" "add_executable(psbtest $srcm/psychobilly_render.cpp)" "target_include_directories(psbtest PRIVATE $srcm)" 'target_compile_definitions(psbtest PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
+          cmake -S "$d" -B "$d/b" > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -1
           (cd "$d/b/Release" && ./hello.exe; echo "dual-hello rc=$?")
-          (cd "$d/b/Release" && ./psbtest.exe --probe > "$RUNNER_TEMP/psbtest.out" 2>&1; echo "dual-psb rc=$?")
-          head -c 200 "$RUNNER_TEMP/psbtest.out" 2>/dev/null; echo
+          (cd "$d/b/Release" && ./psbtest.exe --probe | head -c 120; echo; echo "dual-psb rc=${PIPESTATUS[0]}")
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
