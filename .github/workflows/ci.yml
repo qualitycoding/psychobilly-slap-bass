@@ -86,42 +86,12 @@ jobs:
         shell: bash
         run: |
           set +e
-          srcw=$(cygpath -w "$GITHUB_WORKSPACE/src")
-          tmpw=$(cygpath -w "$RUNNER_TEMP")
-          vswhere='C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe'
-          vspath=$(cmd //c "\"$vswhere\" -latest -property installationPath" | tr -d '\r')
-          vcvars="$vspath\VC\Auxiliary\Build\vcvars64.bat"
-          echo "VS=$vspath"
-          build_and_run() {
-            name=$1; shift
-            flags=$1; shift
-            echo "== $name : cl $flags =="
-            cmd //c "call \"$vcvars\" >nul 2>&1 && cl /nologo /EHsc /Fo:$tmpw\\$name.obj /Fe:$tmpw\\$name.exe $flags $srcw\\psychobilly_render.cpp /I$srcw > $tmpw\\$name-build.log 2>&1"
-            ls -la "$RUNNER_TEMP/$name.exe" 2>/dev/null || { echo "BUILD FAILED"; tail -5 "$RUNNER_TEMP/$name-build.log"; return; }
-            "$RUNNER_TEMP/$name.exe" --probe > "$RUNNER_TEMP/$name.out" 2>&1
-            echo "$name rc=$? outbytes=$(wc -c < "$RUNNER_TEMP/$name.out")"
-            head -c 200 "$RUNNER_TEMP/$name.out"; echo
-          }
-          build_and_run rO2MD "/std:c++20 /O2 /MD"
-          build_and_run rOdMD "/std:c++20 /Od /MD"
-          build_and_run rO2MT "/std:c++20 /O2 /MT"
-          build_and_run rO2MDgs "/std:c++20 /O2 /MD /GS-"
-          echo "== repro1: headers only, empty main =="
-          printf '#include "psb_engine.h"\n#include "psb_json.h"\n#include "psb_sha256.h"\n#include "psb_wav.h"\nint main(){return 0;}\n' > "$RUNNER_TEMP/repro1.cpp"
-          r1w=$(cygpath -w "$RUNNER_TEMP/repro1.cpp")
-          cmd //c "call \"$vcvars\" >nul 2>&1 && cl /nologo /std:c++20 /O2 /EHsc /MD /Fo:$tmpw\\repro1.obj /Fe:$tmpw\\repro1.exe $r1w /I$srcw > $tmpw\\repro1-build.log 2>&1"
-          "$RUNNER_TEMP/repro1.exe"; echo "repro1 rc=$?"
-          echo "== WER dump setup + run main exe =="
-          pwsh -NoProfile -Command "New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Force | Out-Null; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpFolder -Value '$tmpw'; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpType -Value 2; Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps' -Name DumpCount -Value 10"
-          exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
-          "$exe" --probe > /dev/null 2>&1
-          echo "main exe rc=$?"
-          sleep 3
-          ls "$RUNNER_TEMP"/*.dmp 2>/dev/null && echo DUMP-FOUND || echo NO-DUMP
-          echo "== WER eventlog =="
-          pwsh -NoProfile -Command "Get-WinEvent -LogName 'Microsoft-Windows-Windows Error Reporting/Operational' -MaxEvents 10 -ErrorAction SilentlyContinue | Format-List TimeCreated, Id, Message | Out-String -Width 200" | head -20
-          echo "== look for cdb =="
-          find "/c/Program Files" "/c/Program Files (x86)" -maxdepth 6 -name "cdb.exe" 2>/dev/null | head -2
+          echo "QGVjaG8gb2ZmDQpjYWxsICJDOlxQcm9ncmFtIEZpbGVzICh4ODYpXE1pY3Jvc29mdCBWaXN1YWwgU3R1ZGlvXEluc3RhbGxlclx2c3doZXJlLmV4ZSIgLWxhdGVzdCAtcHJvcGVydHkgaW5zdGFsbGF0aW9uUGF0aCA+ICIlVEVNUCVcdnMudHh0Ig0Kc2V0IC9wIFZTUEFUSD08IiVURU1QJVx2cy50eHQiDQplY2hvIFZTUEFUSD0lVlNQQVRIJQ0KY2FsbCAiJVZTUEFUSCVcVkNcQXV4aWxpYXJ5XEJ1aWxkXHZjdmFyczY0LmJhdCIgPm51bA0Kc2V0IFNSQz1EOlxhXHBzeWNob2JpbGx5LXNsYXAtYmFzc1xwc3ljaG9iaWxseS1zbGFwLWJhc3Ncc3JjDQplY2hvID09IEE6IHg2NCAvTzIgL01EID09DQpjbCAvbm9sb2dvIC9zdGQ6YysrMjAgL08yIC9NRCAvRUhzYyAvRm8iJVRFTVAlXEEub2JqIiAvRmUiJVRFTVAlXEEuZXhlIiAiJVNSQyVccHN5Y2hvYmlsbHlfcmVuZGVyLmNwcCIgL0kiJVNSQyUiID4gIiVURU1QJVxBLWJ1aWxkLmxvZyIgMj4mMQ0KaWYgZXhpc3QgIiVURU1QJVxBLmV4ZSIgKCIlVEVNUCVcQS5leGUiIC0tcHJvYmUgPiAiJVRFTVAlXEEub3V0IiAyPiYxICYgZWNobyBBIHJjPSFFUlJPUkxFVkVMISkgZWxzZSAoZWNobyBBIEJVSUxEIEZBSUxFRCAmIHR5cGUgIiVURU1QJVxBLWJ1aWxkLmxvZyIpDQplY2hvID09IEI6IHg2NCAvT2QgL01EID09DQpjbCAvbm9sb2dvIC9zdGQ6YysrMjAgL09kIC9NRCAvRUhzYyAvRm8iJVRFTVAlXEIub2JqIiAvRmUiJVRFTVAlXEIuZXhlIiAiJVNSQyVccHN5Y2hvYmlsbHlfcmVuZGVyLmNwcCIgL0kiJVNSQyUiID4gIiVURU1QJVxCLWJ1aWxkLmxvZyIgMj4mMQ0KaWYgZXhpc3QgIiVURU1QJVxCLmV4ZSIgKCIlVEVNUCVcQi5leGUiIC0tcHJvYmUgPiAiJVRFTVAlXEIub3V0IiAyPiYxICYgZWNobyBCIHJjPSFFUlJPUkxFVkVMISkgZWxzZSAoZWNobyBCIEJVSUxEIEZBSUxFRCAmIHR5cGUgIiVURU1QJVxCLWJ1aWxkLmxvZyIpDQplY2hvID09IEM6IHg2NCAvTzIgL01UID09DQpjbCAvbm9sb2dvIC9zdGQ6YysrMjAgL08yIC9NVCAvRUhzYyAvRm8iJVRFTVAlXEMub2JqIiAvRmUiJVRFTVAlXEMuZXhlIiAiJVNSQyVccHN5Y2hvYmlsbHlfcmVuZGVyLmNwcCIgL0kiJVNSQyUiID4gIiVURU1QJVxDLWJ1aWxkLmxvZyIgMj4mMQ0KaWYgZXhpc3QgIiVURU1QJVxDLmV4ZSIgKCIlVEVNUCVcQy5leGUiIC0tcHJvYmUgPiAiJVRFTVAlXEMub3V0IiAyPiYxICYgZWNobyBDIHJjPSFFUlJPUkxFVkVMISkgZWxzZSAoZWNobyBDIEJVSUxEIEZBSUxFRCAmIHR5cGUgIiVURU1QJVxDLWJ1aWxkLmxvZyIpDQplY2hvID09IEQ6IHg4NiAvTzIgL01EID09DQpjYWxsICIlVlNQQVRIJVxWQ1xBdXhpbGlhcnlcQnVpbGRcdmN2YXJzMzIuYmF0IiA+bnVsDQpjbCAvbm9sb2dvIC9zdGQ6YysrMjAgL08yIC9NRCAvRUhzYyAvRm8iJVRFTVAlXEQub2JqIiAvRmUiJVRFTVAlXEQuZXhlIiAiJVNSQyVccHN5Y2hvYmlsbHlfcmVuZGVyLmNwcCIgL0kiJVNSQyUiID4gIiVURU1QJVxELWJ1aWxkLmxvZyIgMj4mMQ0KaWYgZXhpc3QgIiVURU1QJVxELmV4ZSIgKCIlVEVNUCVcRC5leGUiIC0tcHJvYmUgPiAiJVRFTVAlXEQub3V0IiAyPiYxICYgZWNobyBEIHJjPSFFUlJPUkxFVkVMISkgZWxzZSAoZWNobyBEIEJVSUxEIEZBSUxFRCAmIHR5cGUgIiVURU1QJVxELWJ1aWxkLmxvZyIpDQplY2hvID09IEU6IGhlYWRlcnMtb25seSB4NjQgL08yIC9NRCA9PQ0KY2FsbCAiJVZTUEFUSCVcVkNcQXV4aWxpYXJ5XEJ1aWxkXHZjdmFyczY0LmJhdCIgPm51bA0KKA0KZWNobyAjaW5jbHVkZSAicHNiX2VuZ2luZS5oIg0KZWNobyAjaW5jbHVkZSAicHNiX2pzb24uaCINCmVjaG8gI2luY2x1ZGUgInBzYl9zaGEyNTYuaCINCmVjaG8gI2luY2x1ZGUgInBzYl93YXYuaCINCmVjaG8gaW50IG1haW4oKXtyZXR1cm4gMDt9DQopID4gIiVURU1QJVxyZXBybzEuY3BwIg0KY2wgL25vbG9nbyAvc3RkOmMrKzIwIC9PMiAvTUQgL0VIc2MgL0ZvIiVURU1QJVxFLm9iaiIgL0ZlIiVURU1QJVxFLmV4ZSIgIiVURU1QJVxyZXBybzEuY3BwIiAvSSIlU1JDJSIgPiAiJVRFTVAlXEUtYnVpbGQubG9nIiAyPiYxDQppZiBleGlzdCAiJVRFTVAlXEUuZXhlIiAoIiVURU1QJVxFLmV4ZSIgJiBlY2hvIEUgcmM9IUVSUk9STEVWRUwhKSBlbHNlIChlY2hvIEUgQlVJTEQgRkFJTEVEICYgdHlwZSAiJVRFTVAlXEUtYnVpbGQubG9nIikNCmVjaG8gPT0gRE9ORSA9PQ0K" | base64 -d > "$RUNNER_TEMP/forensics.cmd"
+          cmd //c "$(cygpath -w "$RUNNER_TEMP/forensics.cmd")" 2>&1 | tr -d "\r" | head -50
+          for x in A B C D; do
+            echo "-- $x.out bytes: $(wc -c < "$RUNNER_TEMP/$x.out" 2>/dev/null || echo missing)"
+            head -c 150 "$RUNNER_TEMP/$x.out" 2>/dev/null; echo
+          done
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
