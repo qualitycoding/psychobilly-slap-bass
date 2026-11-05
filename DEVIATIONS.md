@@ -117,3 +117,17 @@ codegen. Fix: CLI tools heap-allocate the engine (`std::make_unique`). The VST3
 processor holds `Engine` as a member of the heap-allocated plugin instance,
 which is unaffected. Diagnostics note: a `main-enter` stderr marker remains in
 `psychobilly-render` for future pre-main vs in-main triage.
+
+## 16. `--input /dev/stdin` is honoured as stdin on all OSes
+
+The frozen voice-lifecycle adapter feeds documents via `--input /dev/stdin`.
+`/dev/stdin` does not exist on Windows, so the renderer maps `/dev/stdin` (and
+`-`) to std::cin. Frozen stub untouched; behaviour on Unix unchanged (reading
+the named stream via cin is equivalent for pipe-fed input).
+
+## 17. CI stages extensionless binary aliases for the frozen stub
+
+stubs/psb_contract.py resolves `psychobilly-render`/`psychobilly-perf` by
+extensionless name. Windows produces `.exe`; MSYS path magic equates `foo` and
+`foo.exe`, so CI stages both names with Python (exact Win32 names) in
+build/psb-bin and points PSB_BUILD_DIR at it.
