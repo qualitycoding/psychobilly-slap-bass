@@ -89,22 +89,45 @@ jobs:
           exe=$(find build -type f -name 'psychobilly-render.exe' | head -1)
           wexe=$(cygpath -w "$PWD/$exe")
           src=$(cygpath -m "$GITHUB_WORKSPACE/src")
-          echo "== true exit code via powershell =="
-          ps1="$TEMP/psb-probe.ps1"
-          echo "\$p = Start-Process -FilePath '$wexe' -ArgumentList '--probe' -Wait -PassThru -RedirectStandardOutput '$TEMP/psb-ps.out' -RedirectStandardError '$TEMP/psb-pserr.out'" > "$ps1"
-          echo "Write-Output ('exitcode=' + \$p.ExitCode)" >> "$ps1"
-          pwsh -NoProfile -File "$(cygpath -w "$ps1")"
-          echo "-- stdout --"; head -c 300 "$TEMP/psb-ps.out" 2>/dev/null; echo
-          echo "-- stderr --"; head -c 300 "$TEMP/psb-pserr.out" 2>/dev/null; echo
-          echo "== standalone build of same TU, /MD =="
-          for rt in MD MT; do
-            d="/tmp/psbtest-$rt"
-            mkdir -p "$d"
-            printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbtest CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(psbtest-render $src/psychobilly_render.cpp)" "target_include_directories(psbtest-render PRIVATE $src)" 'target_compile_definitions(psbtest-render PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
-            [ "$rt" = MT ] && extra=-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded || extra=
-            cmake -S "$d" -B "$d/b" $extra > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -1
-            "$d/b/Release/psbtest-render.exe" --probe > "/tmp/$rt.out" 2>&1; echo "$rt rc=$?"; head -c 200 "/tmp/$rt.out"; echo
-          done
+          echo "== sizes =="
+          ls -la "$exe"
+          echo "== PE headers (cmake exe) =="
+          objdump -x "$exe" 2>/dev/null | grep -E "Machine|Subsystem|magic|Start address" | head -6
+          echo "== cmd errorlevel =="
+          cmd //c "$wexe --probe & echo CMDRC=%ERRORLEVEL%" 2>&1 | head -5
+          echo "== powershell process.start =="
+          ps1="$RUNNER_TEMP/psb-probe.ps1"
+          cat > "$ps1" <<'PS1'
+          $exe = $args[0]
+          try {
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = $exe
+            $psi.Arguments = "--probe"
+            $psi.RedirectStandardOutput = $true
+            $psi.RedirectStandardError = $true
+            $psi.UseShellExecute = $false
+            $p = [System.Diagnostics.Process]::Start($psi)
+            $out = $p.StandardOutput.ReadToEnd()
+            $err = $p.StandardError.ReadToEnd()
+            $p.WaitForExit()
+            Write-Output "PSRC=$($p.ExitCode)"
+            Write-Output "PSOUT=$out"
+            Write-Output "PSERR=$err"
+          } catch {
+            Write-Output ("PSEX=" + $_.Exception.GetType().FullName + ": " + $_.Exception.Message)
+            if ($_.Exception.InnerException) { Write-Output ("PSINNER=" + $_.Exception.InnerException.Message) }
+          }
+          PS1
+          pwsh -NoProfile -File "$(cygpath -w "$ps1")" "$wexe" 2>&1 | head -10
+          echo "== dual-target isolation =="
+          d=/tmp/psbdual
+          rm -rf "$d"; mkdir -p "$d"
+          printf '%s\n' 'cmake_minimum_required(VERSION 3.22)' 'project(psbdual CXX)' 'set(CMAKE_CXX_STANDARD 20)' "add_executable(hello $d/hello.cpp)" "add_executable(psbtest $src/psychobilly_render.cpp)" "target_include_directories(psbtest PRIVATE $src)" 'target_compile_definitions(psbtest PRIVATE PSB_GIT_COMMIT="diag")' > "$d/CMakeLists.txt"
+          printf 'int main(){return 0;}\n' > "$d/hello.cpp"
+          cmake -S "$d" -B "$d/b" > /dev/null && cmake --build "$d/b" --config Release 2>&1 | tail -2
+          (cd "$d/b/Release" && ./hello.exe; echo "dual-hello rc=$?")
+          (cd "$d/b/Release" && ./psbtest.exe --probe > "$RUNNER_TEMP/psbtest.out" 2>&1; echo "dual-psb rc=$?")
+          head -c 200 "$RUNNER_TEMP/psbtest.out" 2>/dev/null; echo
           exit 0
 
       - name: Renderer direct smoke (captures crash output on all OSes)
