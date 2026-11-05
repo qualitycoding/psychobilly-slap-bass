@@ -226,6 +226,14 @@ bool parseDocument(const std::string& text, Document& doc, std::string& error) {
 }
 
 std::string readFile(const std::string& path, bool& ok) {
+    // The frozen test adapter feeds event documents via --input /dev/stdin,
+    // which does not exist on Windows; treat it (and "-") as stdin there.
+    if (path == "/dev/stdin" || path == "-") {
+        std::ostringstream buf;
+        buf << std::cin.rdbuf();
+        ok = true;
+        return buf.str();
+    }
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         ok = false;
