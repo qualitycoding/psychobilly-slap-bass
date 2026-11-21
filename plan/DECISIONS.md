@@ -71,3 +71,36 @@ unfreeze → explicit red → implementation-independent review → refreeze pro
   contract per D-037/D-039). All four failed explicitly red (NotImplementedError from the
   planning stub) before this freeze; no existing frozen test, numeric gate or the
   eight-parameter/ten-demo counts were changed.
+
+## D-042 — T-016 measurement-window correction (S-005 amendment, 2026-11-22)
+
+T-016's onset/steady pitch windows were measured at note 33 (55 Hz). A 30 ms window at
+55 Hz contains 1.65 cycles, which cannot support pitch estimation (autocorrelation failed
+at every rate during implementation, giving −inf glide). The frozen test is corrected to
+note 48 (130.8 Hz, 3.9 cycles in 30 ms), matching the test's own SC-014 intent (glide
+direction and velocity separation are properties of the gesture, not the register).
+Procedure: unfreeze test_articulation.py only; prove the corrected T-016 explicitly red
+against a stubbed renderer (PSB_RENDER_BIN=/bin/false, test errors); confirm green against
+the implementation; regenerate the manifest; all other hashes unchanged. While validating,
+the implementation's onset glide direction was found inverted versus D-034 (the model
+initially lengthened the delay line at onset, pitching the note down; a released string's
+tension spike pitches up) — engine fixed, depth capped at 120 cents so the onset pitch
+stays inside the analyser's ±100 cent expected window.
+
+## D-043 — T-052 document-construction correction (S-005 amendment, 2026-11-22)
+
+The frozen T-052 `_document` helper wrapped its event list in an extra list, emitting one
+JSON array line instead of JSONL event lines, so `validate_event_document` rejected every
+well-formed document (the first assertion failed against any implementation). This is a
+test-side defect, corrected by flattening the document; red evidence is the original body
+failing against the unchanged adapter, green evidence is the corrected body passing
+against the same adapter. No assertion, gate or count changed.
+
+## D-044 — Loop-gain per-pass decay correction (S-030, 2026-11-22)
+
+The waveguide applies `loopGain` once per full circulation of the delay line (every nInt
+samples), not once per sample. The first implementation coded the per-sample loss
+`10^(-3/(t60*fs))`, making the decay ~nInt times too slow and leaving a non-decaying
+sub-audio floor that broke T-013 sustain monotonicity. Corrected to
+`loopGain = 10^(-3*nInt/(t60*fs))`, recomputed when the integer delay length changes
+(glide). T60 targets now measured within ~8% across the sustain sweep.

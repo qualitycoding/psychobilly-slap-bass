@@ -1,0 +1,33 @@
+{"controls": {"attack_noise": 0.2, "body_resonance": 0.45, "mechanical_noise": 0.15, "output_level": 0.75, "pluck_slap": 0.35, "slap_brightness": 0.55, "string_tension": 0.5, "sustain": 0.7}, "render_seconds": 2.0, "sample_rate": 48000, "schema": 2, "seed": 1347636289}
+{"channel": 1, "gesture": "pluck", "note": 36, "sample": 0, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 36, "sample": 6000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 6000, "type": "note_on", "velocity": 0.7}
+{"channel": 1, "note": 43, "sample": 12000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 40, "sample": 12000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 40, "sample": 18000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 48, "sample": 18000, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 48, "sample": 24000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 36, "sample": 24000, "type": "note_on", "velocity": 0.7}
+{"channel": 1, "note": 36, "sample": 30000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 30000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 43, "sample": 36000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 40, "sample": 36000, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 40, "sample": 42000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 45, "sample": 42000, "type": "note_on", "velocity": 0.7}
+{"channel": 1, "note": 45, "sample": 48000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 36, "sample": 48000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 36, "sample": 54000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 54000, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 43, "sample": 60000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 40, "sample": 60000, "type": "note_on", "velocity": 0.7}
+{"channel": 1, "note": 40, "sample": 66000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 48, "sample": 66000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 48, "sample": 72000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 36, "sample": 72000, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 36, "sample": 78000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 78000, "type": "note_on", "velocity": 0.7}
+{"channel": 1, "note": 43, "sample": 84000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 40, "sample": 84000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 40, "sample": 90000, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 45, "sample": 90000, "type": "note_on", "velocity": 0.5}
+{"channel": 1, "note": 45, "sample": 95999, "type": "note_off", "velocity": 0.0}

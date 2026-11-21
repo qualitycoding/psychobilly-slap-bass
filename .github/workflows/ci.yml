@@ -1,0 +1,183 @@
+name: ci
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: ["impl-*", "main"]
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            generator: "Ninja"
+            pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_linux.zip"
+            pluginval_sha: "c01c49d8063965c4c2dea8324468336768f5c9139e0b1caebde14c2400b55352"
+          - runner: windows-2025
+            generator: "Visual Studio 17 2022"
+            arch: "-A x64"
+            pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_windows.zip"
+            pluginval_sha: "c08e61ce3b96db41636f8ec7e76f4c7e2c13ebdac7fa1b5a1f52b4f32ec715ab"
+          - runner: macos-15
+            generator: "Xcode"
+            pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_macos.zip"
+            pluginval_sha: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
+
+      - name: environment
+        run: |
+          echo "runner: ${{ matrix.runner }}"
+          uname -a || ver
+          cmake --version
+          python3 --version || py -3.12 --version
+          git rev-parse HEAD
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}-${{ matrix.runner }}
+
+      - name: python deps
+        run: python3 -m pip install --index-url https://pypi.org/simple -r requirements.txt
+
+      - name: juce linux packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.1-dev libglu1-mesa-dev mesa-common-dev
+
+      - name: configure
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPSB_BUILD_VST3=ON -DPSB_BUILD_DEMOS=ON
+          -G "${{ matrix.generator }}" ${{ matrix.arch }}
+          ${{ runner.os == 'macOS' && '-DCMAKE_OSX_DEPLOYMENT_TARGET=12.0' || '' }}
+
+      - name: build
+        run: cmake --build build --config Release --parallel 2
+
+      - name: ctest
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: frozen suite
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: freeze manifest
+        if: runner.os == 'Windows'
+        run: python scripts/verify_freeze.py
+        shell: pwsh
+
+      - name: pip audit
+        run: python -m pip_audit -r requirements.txt --no-deps --disable-pip --strict --format json --output artifacts/pip-audit.json
+
+      - name: repository audit
+        run: python3 scripts/audit_repository.py --output artifacts/repository-audit.json
+
+      - name: pluginval
+        run: |
+          python3 - <<'PY'
+          import hashlib, os, platform, subprocess, sys, zipfile
+          from pathlib import Path
+          url = "${{ matrix.pluginval_url }}"
+          dest = Path("artifacts/pluginval.zip")
+          dest.parent.mkdir(exist_ok=True)
+          subprocess.run(["curl", "-fsSL", "-o", str(dest), url], check=True)
+          digest = hashlib.sha256(dest.read_bytes()).hexdigest()
+          assert digest == "${{ matrix.pluginval_sha }}", digest
+          zipfile.ZipFile(dest).extractall("artifacts/pluginval-bin")
+          exe = next(p for p in Path("artifacts/pluginval-bin").rglob("*") if p.is_file() and "pluginval" in p.name.lower())
+          exe.chmod(0o755)
+          if platform.system() == "Darwin":
+              subprocess.run(["xattr", "-d", "com.apple.quarantine", str(exe)], check=False)
+          vst3 = next(p for p in Path("build").rglob("*.vst3"), None)
+          assert vst3 is not None, "vst3 bundle not found"
+          cmd = [str(exe), "--validate", str(vst3), "--strictness-level", "7",
+                 "--sample-rates", "44100,48000,88200,96000",
+                 "--block-sizes", "64,128,256,512,1024", "--random-seed", "5265473",
+                 "--timeout-ms", "120000", "--repeat", "3", "--randomise",
+                 "--output-dir", "artifacts/pluginval",
+                 "--output-filename", "pluginval-primary", "--verbose"]
+          proc = subprocess.run(cmd, capture_output=True, text=True)
+          Path("artifacts/pluginval-primary.log").write_text(proc.stdout + "\n" + proc.stderr)
+          assert proc.returncode == 0, proc.returncode
+          log = proc.stdout + proc.stderr
+          assert "Test finished" in log or "finished" in log.lower(), "validator did not complete"
+          assert "failure" not in log.lower().replace("0 failures", ""), "validator reported failures"
+          PY
+
+      - name: performance
+        run: |
+          python3 - <<'PY'
+          import json, platform, subprocess
+          from pathlib import Path
+          exe = next(p for p in Path("build").rglob("psychobilly-render*") if p.is_file() and p.suffix != ".pdb")
+          exe.chmod(0o755)
+          proc = subprocess.run([str(exe), "bench"], capture_output=True, text=True)
+          Path("artifacts/bench.log").write_text(proc.stdout + proc.stderr)
+          assert proc.returncode == 0
+          bench = json.loads(proc.stdout.strip().splitlines()[-1])
+          commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+          lock_hash = __import__("hashlib").sha256(Path("environment-lock.txt").read_bytes()).hexdigest()
+          Path("artifacts/performance.json").write_text(json.dumps({
+              "commit": commit, "lock_sha256": lock_hash,
+              "runner": platform.platform(), "machine": platform.machine(),
+              "rtf_median": bench["rtf_median"], "rtf_max": bench["rtf_max"],
+              "per_run": bench["per_run"]}, indent=2))
+          PY
+
+      - name: environment manifest
+        run: |
+          python3 - <<'PY'
+          import json, platform, subprocess
+          from pathlib import Path
+          Path("artifacts/environment.json").write_text(json.dumps({
+              "commit": subprocess.run(["git","rev-parse","HEAD"],capture_output=True,text=True).stdout.strip(),
+              "platform": platform.platform(),
+              "machine": platform.machine(),
+              "python": platform.python_version(),
+          }, indent=2))
+          PY
+
+      - name: artifact assertions
+        run: |
+          test -s artifacts/pip-audit.json
+          test -s artifacts/repository-audit.json
+          test -s artifacts/performance.json
+          test -s artifacts/environment.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: evidence-${{ matrix.runner }}
+          path: artifacts/
+
+  cmake-lower-bound:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
+      - name: install pinned oldest cmake
+        run: python3 -m pip install --index-url https://pypi.org/simple cmake==3.22.4 ninja
+      - name: configure build test
+        run: |
+          cmake --version
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPSB_BUILD_VST3=ON -DPSB_BUILD_DEMOS=ON -G Ninja
+          cmake --build build --parallel 2
+          ctest --test-dir build --output-on-failure
+          python3 -m pip install --index-url https://pypi.org/simple -r requirements.txt
+          python3 -m unittest discover -s tests -p 'test_*.py'

@@ -1,0 +1,61 @@
+name: evidence
+
+# Source-artifact workflow only: builds demos and the sealed G-004 blind-pair
+# bundles and uploads them. No public release occurs here (G-002 absent).
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: ["impl-*", "evidence/**"]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  demos-and-bundles:
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: g004-evidence-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}-ubuntu-24.04
+      - name: deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.1-dev libglu1-mesa-dev mesa-common-dev
+          python3 -m pip install --index-url https://pypi.org/simple -r requirements.txt
+      - name: build
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPSB_BUILD_VST3=OFF -DPSB_BUILD_DEMOS=ON -G Ninja
+          cmake --build build --parallel 2
+      - name: render demos
+        run: |
+          BIN=build/psychobilly-render
+          mkdir -p artifacts/demos
+          for f in demos/events/*.jsonl; do
+            n=$(basename "$f" .jsonl)
+            "$BIN" render --input "$f" --output "artifacts/demos/$n.wav" --metadata "artifacts/demos/$n.json"
+            cp "$f" "artifacts/demos/$n.jsonl"
+          done
+          test $(ls artifacts/demos/*.wav | wc -l) -eq 10
+          test $(ls artifacts/demos/*.json | wc -l) -eq 10
+      - name: blind bundles
+        run: |
+          python3 scripts/make_blind_pairs.py --window start --output build/listening/round-1
+          python3 scripts/make_blind_pairs.py --window articulation --references fixtures/articulation-references --candidates build/listening/articulation-candidates --output build/listening/articulation-round-1
+          cp -r build/listening/round-1 artifacts/round-1
+          cp -r build/listening/articulation-round-1 artifacts/articulation-round-1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: g004-evidence
+          path: artifacts/

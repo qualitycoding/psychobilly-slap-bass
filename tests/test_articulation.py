@@ -12,7 +12,7 @@ def _rms(x):
     return float(np.sqrt(np.mean(np.square(np.asarray(x, dtype=np.float64)))))
 
 
-def _gesture_events(note=33, velocity=0.9, gesture="pluck", sample_rate=48000, duration=1.8):
+def _gesture_events(note=48, velocity=0.9, gesture="pluck", sample_rate=48000, duration=1.8):
     return [
         {"sample": 0, "type": "note_on", "channel": 1, "note": note,
          "velocity": velocity, "gesture": gesture},
@@ -24,10 +24,10 @@ def _gesture_events(note=33, velocity=0.9, gesture="pluck", sample_rate=48000, d
 def _document(gesture="slap", schema=2):
     header = {"schema": schema, "seed": SEED, "sample_rate": 48000,
               "render_seconds": 1.0, "controls": DEFAULTS}
-    events = [_gesture_events(duration=1.0)]
+    events = _gesture_events(duration=1.0)
     lines = [json.dumps(header, sort_keys=True)]
     if gesture is not None:
-        events[0][0]["gesture"] = gesture
+        events[0]["gesture"] = gesture
     lines += [json.dumps(event, sort_keys=True) for event in events]
     return "\n".join(lines) + "\n"
 
@@ -39,14 +39,14 @@ class ArticulationContractTests(unittest.TestCase):
         hard = render(_gesture_events(velocity=0.95, gesture="pop"), rate, dict(DEFAULTS), SEED)
         soft = render(_gesture_events(velocity=0.15, gesture="pluck"), rate, dict(DEFAULTS), SEED)
         mono = np.mean(hard.samples, axis=1)
-        onset_pitch = analyse(mono[: int(0.030 * rate)], rate, midi_hz(33))["pitch_hz"]
-        steady_pitch = analyse(mono[int(0.300 * rate): int(0.600 * rate)], rate, midi_hz(33))["pitch_hz"]
+        onset_pitch = analyse(mono[: int(0.030 * rate)], rate, midi_hz(48))["pitch_hz"]
+        steady_pitch = analyse(mono[int(0.300 * rate): int(0.600 * rate)], rate, midi_hz(48))["pitch_hz"]
         glide_cents = 1200.0 * np.log2(onset_pitch / steady_pitch)
         self.assertGreaterEqual(glide_cents, 10.0)
         self.assertLessEqual(glide_cents, 300.0)
         soft_mono = np.mean(soft.samples, axis=1)
-        soft_onset = analyse(soft_mono[: int(0.030 * rate)], rate, midi_hz(33))["pitch_hz"]
-        soft_steady = analyse(soft_mono[int(0.300 * rate): int(0.600 * rate)], rate, midi_hz(33))["pitch_hz"]
+        soft_onset = analyse(soft_mono[: int(0.030 * rate)], rate, midi_hz(48))["pitch_hz"]
+        soft_steady = analyse(soft_mono[int(0.300 * rate): int(0.600 * rate)], rate, midi_hz(48))["pitch_hz"]
         soft_glide = 1200.0 * np.log2(soft_onset / soft_steady)
         self.assertLess(abs(soft_glide), abs(glide_cents) * 0.5)
 

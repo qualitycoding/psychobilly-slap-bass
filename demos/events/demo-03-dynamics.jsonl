@@ -1,0 +1,9 @@
+{"controls": {"attack_noise": 0.2, "body_resonance": 0.45, "mechanical_noise": 0.15, "output_level": 0.75, "pluck_slap": 0.35, "slap_brightness": 0.55, "string_tension": 0.5, "sustain": 0.7}, "render_seconds": 2.0, "sample_rate": 48000, "schema": 2, "seed": 1347636289}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 0, "type": "note_on", "velocity": 0.15}
+{"channel": 1, "note": 43, "sample": 21600, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 24000, "type": "note_on", "velocity": 0.4}
+{"channel": 1, "note": 43, "sample": 45600, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 48000, "type": "note_on", "velocity": 0.65}
+{"channel": 1, "note": 43, "sample": 69600, "type": "note_off", "velocity": 0.0}
+{"channel": 1, "gesture": "pluck", "note": 43, "sample": 72000, "type": "note_on", "velocity": 0.9}
+{"channel": 1, "note": 43, "sample": 93600, "type": "note_off", "velocity": 0.0}

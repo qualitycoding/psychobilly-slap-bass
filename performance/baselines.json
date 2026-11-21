@@ -1,0 +1,8 @@
+{
+  "ubuntu-24.04:ffc5f14d9d06d1156c38b0a699d3f3a60c1c31b29952f2fd1c274216f7bb1568": {
+    "environment_lock_sha256": "ffc5f14d9d06d1156c38b0a699d3f3a60c1c31b29952f2fd1c274216f7bb1568",
+    "rtf_max": 0.015354697,
+    "rtf_median": 0.014945467200000001,
+    "runner": "ubuntu-24.04"
+  }
+}

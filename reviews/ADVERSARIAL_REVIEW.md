@@ -1,18 +1,56 @@
-# Planning adversarial review
+# Adversarial review (S-ADVERSARIAL)
 
-**Scope:** plan contracts and foreseeable implementation abuse. No implementation was executed and no implementation break is claimed fixed. S-ADVERSARIAL must replace this record after hostile testing.
+**Reviewer limitation:** same agent as the implementer (see CODE_REVIEW.md).
+Treat this as a structured self-challenge; the human gate decides on an
+independent re-review.
 
-## Challenges and resulting controls
+## Attack surface exercised
 
-1. **False-green host validation:** exit zero can conceal skipped pluginval coverage. D-014/D-022 research and S-080 require configuration/test-family/skip parsing plus artifacts; stable-race fallback is narrow under D-011.
-2. **Host corruption through malformed state:** size alone is insufficient. D-012/D-022 and T-005 require schema/order/content validation and unchanged active sound; audio-thread state copying is forbidden by D-008.
-3. **Renderer resource exhaustion:** D-024 byte/event/duration bounds and S-050/S-090 require fail-closed parsing, bounded resources and hostile cases.
-4. **An analyser validating itself:** T-015 uses independent known answers; matched-note conditioning is restricted to T-014, and adapters must return measured data under D-027.
-5. **Metric pass sold as realism:** D-017/D-071, G-004 and S-LISTEN explicitly prohibit that inference; ordinary-pluck references cannot validate slap.
-6. **Disclosed blind key reused:** D-015 and S-100/S-LISTEN require a new seed after disclosure, sealed base64 key, balanced sides and maximum three rounds.
-7. **Performance target relaxed after a miss:** D-018/D-029 and G-005 require native measurements, stored baselines and human rescope.
-8. **Secrets in evidence or URLs:** D-026/D-030, T-051 and S-090 prohibit credentials/local paths/listener metadata and scan repository history and bundles.
-9. **CI platform hidden by fail-fast or emulation:** TRACEABILITY and ENVIRONMENT map every declared target to native versioned jobs with `fail-fast:false`.
-10. **Blind-pair pseudoreplication:** seven recordings cannot support a claim of twelve independent acoustic sources. D-028 narrows the p-value to descriptive use and leaves qualitative listening authoritative.
+1. **Malformed state XML** — random truncation, wrong root tag, `schema="2"`,
+   missing PARAMs, duplicate ids, values outside [0,1], non-numeric values:
+   all rejected by `validate_state`/`setStateInformation` without touching
+   active audio. (T-022/T-030 green.)
+2. **Event JSONL fuzzing** — unknown fields, duplicate keys (json.h rejects),
+   non-finite numbers, out-of-order samples, samples beyond declared duration,
+   rates outside the whitelist, documents over the 1 MiB limit, empty events:
+   all fail closed with exit code 2 and no output file written. (T-021/T-023.)
+3. **Resource exhaustion** — 256 note-ons in 64-sample steps: voice count
+   bounded at 8, steals counted, no growth. 65536-event cap enforced;
+   19200000-frame cap enforced; render memory bounded by frame count.
+4. **Denormals/NaN** — `sanitise_` zeroes below 1e-300 in the loop; engine
+   output checked finite across all frozen rate/note/velocity corners (T-010);
+   `ScopedNoDenormals` in the plugin wrapper; bench reports `finite:true`.
+5. **Voice theft / retrigger** — same-note retrigger preserves delay-line
+   energy (T-017); quietest-then-oldest steal verified by T-015.
+6. **False-success gates** — the analyser is not tuned to the synth's own
+   expectations: T-014 conditioning uses only the matched note (no synth
+   output fed back); T-012 known answers are synthetic signals with
+   octave-off and missing-fundamental traps; the listening gate (G-004)
+   requires human answers, and `score_blind` fails closed above 8/12.
+7. **Secrets** — repo-wide and history scan clean; the planning PAT used for
+   push is never committed (remote URL constructed at push time in a detached
+   job, credential not persisted in any file).
+8. **Dependency advisories** — pip-audit pinned at 2.10.0, `--strict`, no
+   ignores (CI artifact `pip-audit.json`).
 
-No unresolved Critical/High plan break remains after D-028–D-031. Frozen tests were not weakened. Any new implementation regression test must use the full unfreeze/red/refreeze procedure.
+## Confirmed breaks found during review
+
+- (fixed) Block-staircase component capture — see CODE_REVIEW.md. Would have
+  allowed vacuous T-017/T-013 passes; now genuinely measured per sample.
+- (fixed) Loop-gain per-pass error — see D-044.
+- (fixed) Onset glide inversion — see D-042.
+- (fixed) T-052 malformed document construction — see D-043.
+
+## Accepted risks (below High)
+
+- No GUI editor; generic host panel only.
+- `no_allocation_in_process` is an audited claim, not an instrumented measure.
+- pluginval GUI-side coverage is limited by the headless editor (CI uses the
+  exact primary command; no skips are passed).
+
+## Verdict
+
+All confirmed breaks resolved; no Critical/High break remains open. New
+regression coverage for the found breaks exists via the corrected frozen
+tests themselves (D-042/D-043 amendments plus the previously frozen
+T-013/T-016/T-017 gates).

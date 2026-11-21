@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "created_utc": "2026-11-22",
+  "private_corpus": {
+    "status": "private-not-committed",
+    "note": "Isolated soft/hard pluck, pop, slap, muted/ghost, rapid same-string repetition and rhythmic patterns. Bridge-piezo, fingerboard/contact and body/microphone paths recorded separately where possible. Performer consent, licence, checksums and redistribution rights are stored with the private corpus only; no private audio enters Git history or public evidence.",
+    "deliverable_rule": "Only derived non-audio measurements and source citations may be committed."
+  },
+  "analysis_targets": [
+    {
+      "artist": "Steve Whitehouse",
+      "band": "Frenzy",
+      "aspects": ["pitch/glide behaviour", "onset/contact timing", "noise/tone ratio"],
+      "gear_inference_from_mixes": false
+    },
+    {
+      "artist": "Oliver Baroni",
+      "band": "Hillbilly Moon Explosion",
+      "aspects": ["pitch/glide behaviour", "per-partial decay", "multi-resolution spectra"],
+      "gear_inference_from_mixes": false
+    },
+    {
+      "artist": "Ray Thompson",
+      "band": "Demented Are Go (Ray Thompson era)",
+      "aspects": ["contact-event count", "onset/contact timing"],
+      "gear_inference_from_mixes": false
+    },
+    {
+      "artist": "Graeme Grant",
+      "band": "Demented Are Go (Graeme Grant era)",
+      "aspects": ["contact-event count", "per-partial decay"],
+      "gear_inference_from_mixes": false
+    }
+  ],
+  "commercial_audio_policy": "Commercial audio remains outside Git history and public evidence; only derived non-audio measurements and source citations may be committed.",
+  "cleared_references": {
+    "ordinary_pluck": {
+      "source": "VSCO 2 Community Edition (sgossner/VSCO-2-CE)",
+      "licence": "CC0-1.0",
+      "files": "fixtures/references/ (7 files, see research/reference-candidates/manifest.json)"
+    },
+    "articulation": {
+      "source": "synthesized in-repository (independent NumPy model)",
+      "licence": "CC0-1.0",
+      "files": "fixtures/articulation-references/ (12 clips, 3 per gesture family)"
+    }
+  },
+  "features": [
+    "pitch/glide",
+    "per-partial frequency and T60",
+    "onset/contact timing",
+    "contact-event count",
+    "noise/tone ratio",
+    "multi-resolution spectra"
+  ],
+  "splits": {
+    "calibration": "private corpus gestures assigned per performer/session",
+    "held_out": "isolated pluck/pop/slap/ghost gestures reserved for G-004 listening"
+  },
+  "preset_policy": "No artist preset may claim measured reproduction before fitting and listening evidence exist."
+}
