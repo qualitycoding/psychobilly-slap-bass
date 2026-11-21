@@ -74,3 +74,18 @@ A fresh adversarial pass attempted to falsify every intake assumption, decision 
 ## Audit result
 
 **Confirmed: 49 requirement/premise items; falsified: 0; unverifiable future/external items: 5** (A-002, A-006, A-010, A-015, D-018), plus C-010 narrowly retained as non-load-bearing observation. Every unverifiable item maps to R-004/R-007/R-009/R-013 and a test or gate. No falsified load-bearing item remains; no L/K amendment pair is required. The separate cold-read branch mismatch is recorded by L-20261104T013500Z and D-028.
+
+## S-005 research-contract additions
+
+| Premise | Status | Evidence/gate |
+|---|---|---|
+| A-019 artist names are analysis targets, not verified presets | confirmed | D-037/D-038; REFERENCE_PLAN |
+| A-020 separate buses/output models preserve eight host parameters | confirmed as contract | D-036/D-041/D-042; T-002/T-018 |
+| A-021 isolated consented calibration audio is required | confirmed requirement, audio not yet obtained | S-025 and REFERENCE_PLAN blocking rule |
+| A-022 extra physical complexity must justify its cost | confirmed | D-033; T-040/G-004/G-005 |
+| D-032–D-036 define plausible candidate architecture | confirmed as design, perceptual realism unverified | T-016–T-018 and G-004 |
+| D-037/D-043 prohibit commercial evidence audio | confirmed | T-052, S-090 audit |
+| D-039 articulation listening is independent of pluck listening | confirmed | T-050/T-052 and G-004 |
+| D-041 schema 1 remains compatible and schema 2 validates articulation | confirmed as contract | T-020/T-021 clean-red evidence |
+| D-042 diagnostics must be measured, not hardcoded | confirmed obligation | implementation/adversarial reviews |
+| Cleared articulation audio currently exists | **false; not assumed** | REFERENCE_PLAN explicitly records absence; S-025 must produce it |

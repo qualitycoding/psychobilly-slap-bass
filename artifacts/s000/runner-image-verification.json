@@ -1,0 +1,17 @@
+{
+  "ubuntu-24.04": {
+    "path": "images/ubuntu/Ubuntu2404-Readme.md",
+    "verified": true,
+    "sha": "7fa7e1aeaa474591fccf5973dd2f85c2cf6f5529"
+  },
+  "windows-2025": {
+    "path": "images/windows/Windows2025-Readme.md",
+    "verified": true,
+    "sha": "ec0680ddef1238ba9f4bf872db02628332ba24f2"
+  },
+  "macos-15": {
+    "path": "images/macos/macos-15-Readme.md",
+    "verified": true,
+    "sha": "7b7aa2607800f9735b3062b0229bca92376e7bd2"
+  }
+}

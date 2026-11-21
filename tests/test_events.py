@@ -5,24 +5,31 @@ import unittest
 import numpy as np
 
 from stubs.psb_contract import render, validate_event_document
-from tests._support import DEFAULTS, SEED, note_events
+from tests._support import ARTICULATIONS, DEFAULTS, SEED, articulation_events, note_events
 
 
 class EventAndRenderTests(unittest.TestCase):
-    def document(self, seed=SEED):
-        header = {"schema": 1, "seed": seed, "sample_rate": 48000, "render_seconds": 2.0, "controls": DEFAULTS}
-        return "\n".join([json.dumps(header, sort_keys=True)] + [json.dumps(event, sort_keys=True) for event in note_events()]) + "\n"
+    def document(self, seed=SEED, schema=1, articulation="pluck"):
+        header = {"schema": schema, "seed": seed, "sample_rate": 48000, "render_seconds": 2.0, "controls": DEFAULTS}
+        events = note_events() if schema == 1 else articulation_events(articulation)
+        return "\n".join([json.dumps(header, sort_keys=True)] + [json.dumps(event, sort_keys=True) for event in events]) + "\n"
 
     def test_t020_event_schema_accepts_canonical_document(self):
         """T-020: SC-007/SC-008; D-024 freeze JSONL header/event schema and ordering."""
-        result = validate_event_document(self.document())
-        self.assertTrue(result["accepted"])
-        self.assertEqual(result["event_count"], 2)
-        self.assertEqual(result["schema"], 1)
+        for schema in (1, 2):
+            for articulation in (ARTICULATIONS if schema == 2 else ("pluck",)):
+                with self.subTest(schema=schema, articulation=articulation):
+                    result = validate_event_document(self.document(schema=schema, articulation=articulation))
+                    self.assertTrue(result["accepted"])
+                    self.assertEqual(result["event_count"], 2)
+                    self.assertEqual(result["schema"], schema)
 
     def test_t021_event_validation_rejects_bad_inputs(self):
         """T-021: SC-007/SC-009; D-012/D-024 reject malformed events and resource excess."""
-        documents = ["", "{}\n", self.document().replace('"schema": 1', '"schema": 2'),
+        documents = ["", "{}\n", self.document().replace('"schema": 1', '"schema": 3'),
+                     self.document(schema=2).replace('"articulation": "pluck"', '"articulation": "unknown"'),
+                     self.document(schema=2).replace(', "articulation": "pluck"', ""),
+                     self.document(schema=2).replace('"type": "note_off"', '"articulation": "pluck", "type": "note_off"'),
                      self.document().replace('"sample": 0', '"sample": -1'),
                      self.document().replace('"note": 33', '"note": 128'),
                      self.document().replace('"velocity": 0.55', '"velocity": 2'),

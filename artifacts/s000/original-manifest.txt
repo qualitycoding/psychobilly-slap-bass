@@ -1,0 +1,10 @@
+tests/__init__.py: OK
+tests/_support.py: OK
+tests/test_host_contract.py: OK
+tests/test_dsp.py: OK
+tests/test_events.py: OK
+tests/test_operational_security.py: OK
+tests/test_performance.py: OK
+tests/test_listening.py: OK
+research/reference-candidates/manifest.json: OK
+research/reference-candidates/analysis.json: OK

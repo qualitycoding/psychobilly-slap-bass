@@ -1,7 +1,7 @@
 # FROZEN — DO NOT MODIFY
 import unittest
 
-from stubs.psb_contract import make_blind_pairs, score_blind
+from stubs.psb_contract import make_articulation_blind_pairs, make_blind_pairs, score_blind
 from tests._support import SEED
 
 
@@ -41,6 +41,36 @@ class ListeningEvidenceTests(unittest.TestCase):
         self.assertEqual(bundle["listener_metadata"], {})
         self.assertEqual(bundle["round_limit"], 3)
         self.assertTrue(bundle["qualitative_override_required"])
+
+    def test_t052_articulation_bundle_is_balanced_cleared_and_independent(self):
+        """T-052: SC-016/D-037/D-039 require three pairs per gesture and an independent gate."""
+        bundle = make_articulation_blind_pairs(
+            "fixtures/articulation-references", "build/listening/articulation-candidates",
+            "build/listening/articulation-round-1", SEED + 1, "start")
+        self.assertEqual(bundle["pair_count"], 12)
+        self.assertEqual(bundle["reference_a_count"], 6)
+        self.assertEqual(bundle["reference_b_count"], 6)
+        self.assertEqual(bundle["articulation_pair_counts"],
+                         {"pluck": 3, "pop": 3, "slap": 3, "ghost": 3})
+        self.assertEqual(bundle["clip_seconds"], 1.0)
+        self.assertEqual(bundle["rms_dbfs"], -23.0)
+        self.assertEqual(bundle["bit_depth"], 24)
+        self.assertTrue(bundle["key_base64_sealed"])
+        self.assertTrue(bundle["sha256sums_present"])
+        self.assertTrue(bundle["attribution_present"])
+        self.assertTrue(bundle["all_references_redistribution_cleared"])
+        self.assertEqual(bundle["commercial_audio_files"], [])
+        self.assertNotEqual(bundle["bundle_id"], "ordinary-pluck")
+        self.assertTrue(bundle["independent_numeric_gate"])
+        self.assertTrue(bundle["qualitative_override_required"])
+        passing = score_blind("build/listening/articulation-round-1", ["A"] * 12)
+        self.assertLessEqual(passing["correct"], 8)
+        self.assertTrue(passing["numeric_pass"])
+        decoded = passing["decoded_reference_sides"]
+        nine_correct = decoded[:9] + [("B" if side == "A" else "A") for side in decoded[9:]]
+        failing = score_blind("build/listening/articulation-round-1", nine_correct)
+        self.assertEqual(failing["correct"], 9)
+        self.assertFalse(failing["numeric_pass"])
 
 
 if __name__ == "__main__":

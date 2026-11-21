@@ -1,0 +1,22 @@
+{
+  "python": "3.12.12",
+  "os": "Linux-6.18.44-x86_64-with-glibc2.36",
+  "architecture": "x86_64",
+  "compiler": "g++ (Debian 12.2.0-14+deb12u1) 12.2.0",
+  "cpp20_compile_run": "pass",
+  "cmake_main": "cmake version 3.31.6",
+  "cmake_lower_bound": "cmake version 3.22.4",
+  "direct_python_pins": {
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "soundfile": "0.13.1",
+    "pip-audit": "2.10.0"
+  },
+  "pluginval_version": "1.0.4",
+  "pluginval_all_platform_hashes": "pass",
+  "environment_lock_sha256": "a16b21e051f99d535ab0a1500bb8e7269acddfd7053cabfd6d6fdcb7c56cb2c8",
+  "repository_write": "pass: implementation branch created",
+  "juce_and_action_pins": "pass",
+  "runner_image_source_documents": "pass",
+  "scope_note": "Local sandbox verification only; no native Windows/macOS/Ubuntu CI result is claimed."
+}

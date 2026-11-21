@@ -1,7 +1,7 @@
 {
-  "test_count": 20,
-  "error_count": 249,
-  "not_implemented_count": 249,
+  "test_count": 24,
+  "error_count": 267,
+  "not_implemented_count": 267,
   "unexpected_errors": [],
   "subprocess_exit_code": 1,
   "clean_red": true

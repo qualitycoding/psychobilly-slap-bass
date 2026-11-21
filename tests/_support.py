@@ -13,6 +13,7 @@ DEFAULTS = {
     "output_level": 0.75,
 }
 SEED = 0x50534C41
+ARTICULATIONS = ("pluck", "pop", "slap", "ghost")
 
 
 def note_events(note=33, velocity=0.55, sample_rate=48000, duration=1.8):
@@ -24,6 +25,26 @@ def note_events(note=33, velocity=0.55, sample_rate=48000, duration=1.8):
 
 def render_note(note=33, velocity=0.55, sample_rate=48000, controls=None, seed=SEED):
     return render(note_events(note, velocity, sample_rate), sample_rate,
+                  dict(DEFAULTS if controls is None else controls), seed)
+
+
+def articulation_events(articulation, note=33, velocity=0.55, sample_rate=48000,
+                        duration=1.8, retrigger=False):
+    assert articulation in ARTICULATIONS
+    events = [{"sample": 0, "type": "note_on", "channel": 1, "note": note,
+               "velocity": velocity, "articulation": articulation}]
+    if retrigger:
+        events.append({"sample": int(0.4 * sample_rate), "type": "note_on", "channel": 1,
+                       "note": note, "velocity": velocity, "articulation": articulation})
+    events.append({"sample": int(duration * sample_rate), "type": "note_off", "channel": 1,
+                   "note": note, "velocity": 0.0})
+    return events
+
+
+def render_articulation(articulation, note=33, velocity=0.55, sample_rate=48000,
+                        controls=None, seed=SEED, retrigger=False):
+    return render(articulation_events(articulation, note, velocity, sample_rate,
+                                      retrigger=retrigger), sample_rate,
                   dict(DEFAULTS if controls is None else controls), seed)
 
 

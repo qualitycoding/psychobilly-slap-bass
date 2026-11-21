@@ -7,8 +7,9 @@ from pathlib import Path
 
 import numpy as np
 
-from stubs.psb_contract import analyse, render, voice_lifecycle
-from tests._support import DEFAULTS, SEED, midi_hz, note_events, render_note
+from stubs.psb_contract import analyse, output_model_contract, render, voice_lifecycle
+from tests._support import (DEFAULTS, SEED, midi_hz, note_events, render_articulation,
+                            render_note)
 
 
 def mono(samples):
@@ -119,6 +120,75 @@ class DspTests(unittest.TestCase):
             reference_centroid = float(np.median(reference_metrics[label]))
             self.assertLessEqual(abs(math.log2(measured["centroid_hz"] / reference_centroid)), 1.433155096971784)
             self.assertLessEqual(abs(measured["pitch_error_cents"]), 21)
+
+    def test_t016_onset_glide_is_dynamic_and_distinct_from_inharmonicity(self):
+        """T-016: SC-014/D-034 use known-answer chirp/stretch cases and soft/hard gestures."""
+        rate = 48000
+        t = np.arange(int(0.8 * rate)) / rate
+        frequency = 55.0 * (1.0 + 0.01 * np.exp(-t / 0.08))
+        phase = 2 * np.pi * np.cumsum(frequency) / rate
+        glide = analyse(np.sin(phase), rate, 55.0)
+        self.assertGreater(glide["onset_pitch_cents"], 15.0)
+        self.assertLess(glide["pitch_glide_cents"], -15.0)
+        self.assertAlmostEqual(glide["pitch_glide_tau_s"], 0.08, delta=0.02)
+        self.assertTrue(glide["pitch_glide_monotonic"])
+        stretched = np.sin(2 * np.pi * 55 * t) + 0.3 * np.sin(2 * np.pi * 110 * 2 ** (8 / 1200) * t)
+        static = analyse(stretched, rate, 55.0)
+        self.assertAlmostEqual(static["static_partial_stretch_cents"], 8.0, delta=1.0)
+        self.assertLess(abs(static["pitch_glide_cents"]), 0.5)
+        soft = analyse(mono(render_articulation("pop", velocity=0.25).samples), rate, 55.0)
+        hard = analyse(mono(render_articulation("pop", velocity=0.95).samples), rate, 55.0)
+        self.assertGreater(hard["onset_pitch_cents"], soft["onset_pitch_cents"] + 2.0)
+        self.assertLess(hard["pitch_glide_cents"], 0.0)
+        self.assertGreater(abs(hard["pitch_glide_cents"]), abs(soft["pitch_glide_cents"]))
+        self.assertTrue(hard["pitch_glide_monotonic"])
+
+    def test_t017_articulation_direction_collision_ghost_and_retrigger(self):
+        """T-017: SC-013/D-032/D-033 check gesture physics, bounded contact and retained energy."""
+        expected_direction = {"pluck": 1, "pop": 1, "slap": -1, "ghost": -1}
+        for articulation, direction in expected_direction.items():
+            with self.subTest(articulation=articulation):
+                result = render_articulation(articulation, velocity=0.9)
+                self.assertEqual(result.metadata["articulation"], articulation)
+                self.assertEqual(result.metadata["gesture_direction"], direction)
+                self.assertGreaterEqual(result.metadata["collision_count"], 0)
+                self.assertLessEqual(result.metadata["collision_count"], 32)
+                self.assertTrue(np.all(np.isfinite(result.samples)))
+                self.assertLessEqual(float(np.max(np.abs(result.samples))), 0.34)
+        for articulation in ("pop", "slap"):
+            with self.subTest(required_collision=articulation):
+                result = render_articulation(articulation, velocity=0.9)
+                self.assertGreater(result.metadata["collision_count"], 0)
+        with self.subTest(ghost_balance=True):
+            ghost = render_articulation("ghost", velocity=0.9)
+            self.assertLess(rms(ghost.components["pitched"]),
+                            0.25 * rms(ghost.components["slap_bus"]))
+        with self.subTest(retrigger=True):
+            repeated = render_articulation("pluck", velocity=0.8, retrigger=True)
+            self.assertTrue(repeated.metadata["retrigger_preserved_energy"])
+            self.assertGreater(repeated.metadata["retrigger_residual_ratio"], 0.05)
+            self.assertLessEqual(repeated.metadata["retrigger_max_discontinuity"], 0.1)
+
+    def test_t018_fitted_output_models_and_independent_pitch_slap_buses(self):
+        """T-018: SC-015/D-035/D-036 expose diagnostic buses without adding host controls."""
+        contract = output_model_contract()
+        self.assertEqual(contract["body_model"], "compact_fitted")
+        self.assertEqual(set(contract["pickup_models"]), {"piezo", "magnetic", "microphone"})
+        self.assertFalse(contract["runtime_fem"])
+        self.assertEqual(contract["diagnostic_buses"], ["pitch_bus", "slap_bus"])
+        pluck = render_articulation("pluck", velocity=0.8)
+        slap = render_articulation("slap", velocity=0.9)
+        for result in (pluck, slap):
+            self.assertIn("pitch_bus", result.components)
+            self.assertIn("slap_bus", result.components)
+            self.assertFalse(result.metadata["normalisation_applied"])
+        self.assertGreater(rms(pluck.components["pitch_bus"]), rms(pluck.components["slap_bus"]))
+        self.assertGreater(rms(slap.components["slap_bus"]), rms(slap.components["pitch_bus"]))
+        dark = render_articulation("slap", controls=dict(DEFAULTS, slap_brightness=0.1), seed=SEED + 9)
+        bright = render_articulation("slap", controls=dict(DEFAULTS, slap_brightness=0.9), seed=SEED + 9)
+        self.assertTrue(np.array_equal(dark.components["pitch_bus"], bright.components["pitch_bus"]))
+        self.assertGreater(centroid(bright.components["slap_bus"], bright.sample_rate),
+                           centroid(dark.components["slap_bus"], dark.sample_rate))
 
     def test_t015_voice_steal_retrigger_and_coupling_are_bounded(self):
         """T-015: SC-005/SC-006; C-026; D-019 bound eight slots and sympathetic feedback."""

@@ -22,7 +22,7 @@ Also controlling:
 4. `research/claims.json`, `research/SOURCES.md`, R6 spike records and `premortem/`.
 5. `plan/PLAN.md` in step order.
 
-D-001–D-040 are binding, including the later D-028–D-031 records. D-070/D-071 are the original reference/listening records; D-037/D-039 add the artist-use and articulation-listening obligations. If identifiers appear non-sequential, do not renumber them. Read `Psychobilly_Slap_Double_Bass_VST_Research.md` before S-005.
+D-001–D-043 are binding, including the later D-028–D-031 records and S-005's D-041–D-043 contract details. D-070/D-071 are the original reference/listening records; D-037/D-039 add the artist-use and articulation-listening obligations. If identifiers appear non-sequential, do not renumber them. Read `Psychobilly_Slap_Double_Bass_VST_Research.md` before S-005.
 
 ## Frozen-test procedure
 

@@ -65,6 +65,15 @@ def score_blind(bundle_dir: str, answers: list[str]) -> dict[str, Any]:
     _not_implemented()
 
 
+def make_articulation_blind_pairs(reference_dir: str, candidate_dir: str, output_dir: str,
+                                  seed: int, window: str) -> dict[str, Any]:
+    _not_implemented()
+
+
+def output_model_contract() -> dict[str, Any]:
+    _not_implemented()
+
+
 def security_audit() -> dict[str, Any]:
     _not_implemented()
 

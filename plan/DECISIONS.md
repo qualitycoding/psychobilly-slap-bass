@@ -50,3 +50,15 @@ G-004 retains the original twelve ordinary-pluck pairs and adds twelve sealed, b
 ## D-040 — Frozen contract migration
 
 S-005 precedes implementation. Add T-016/T-017/T-018/T-052 and amend only affected event/listening contracts through unfreeze, explicit red, implementation-independent review and refreeze. Existing numeric gates and the eight-parameter/ten-demo counts remain unless a separate D-record explicitly changes them. No implementation begins on the unreconciled contract.
+
+## D-041 — Schema 2 and MIDI articulation mapping
+
+Renderer schema 1 remains valid with its original legacy behaviour. Schema 2 requires `articulation` on every `note_on`, with exactly `pluck`, `pop`, `slap` or `ghost`; `note_off` must not carry the field. Unknown articulations, schema 2 notes missing the field and schema 3 are rejected. On MIDI channel 1, latched keyswitches 24/25/26/27 select pluck/pop/slap/ghost respectively and do not sound notes. Keyswitches are outside the supported pitched-note range. The eight APVTS parameters are unchanged.
+
+## D-042 — Research diagnostic contracts
+
+T-016 extends the analyser with `onset_pitch_cents`, `pitch_glide_cents`, `pitch_glide_tau_s`, `pitch_glide_monotonic` and `static_partial_stretch_cents`, using known-answer dynamic-chirp and static-stretch signals. T-017 requires gesture direction, bounded collision count, finite output, muted ghost balance and measured same-string residual/continuity metadata. T-018 requires `pitch_bus` and `slap_bus` diagnostic components plus an output-model contract naming `compact_fitted`, `piezo`, `magnetic` and `microphone`, with no runtime FEM. These are measured adapter obligations, not permission to hardcode success.
+
+## D-043 — Project-owned articulation reference route
+
+`research/calibration/REFERENCE_PLAN.md` defines the lawful S-025 recording route and its blocking conditions. S-005 completion means the route, consent template and repository hygiene exist, not that audio has already been recorded. The sealed articulation bundle contains three pairs each for pluck, pop, slap and ghost, balanced to six reference-A and six reference-B pairs. Commercial artist audio and private consent forms remain outside Git and evidence.

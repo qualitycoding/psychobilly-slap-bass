@@ -64,4 +64,4 @@ All matrix jobs use `fail-fast: false`. The generation branch supplies planning 
 | SC-015 | Compact body/pickup models feed independent pitch and slap buses without new host parameters or hidden normalisation. | T-018; T-002/T-023 | S-035, S-050 |
 | SC-016 | A sealed twelve-pair articulation bundle supplements the original pluck bundle and uses only redistribution-cleared audio. | T-052; G-004 record | S-005, S-025, S-100, S-LISTEN |
 
-New reverse mappings: T-016 → SC-014/D-034; T-017 → SC-013/D-032/D-033; T-018 → SC-015/D-035/D-036; T-052 → SC-016/D-037/D-039. Existing SC-001–SC-012 obligations remain binding.
+New reverse mappings: T-016 → SC-014/D-034/D-042; T-017 → SC-013/D-032/D-033/D-042; T-018 → SC-015/D-035/D-036/D-042; T-052 → SC-016/D-037/D-039/D-043. T-020/T-021 additionally cover D-041 schema 1/schema 2 compatibility and rejection. Existing SC-001–SC-012 obligations remain binding.

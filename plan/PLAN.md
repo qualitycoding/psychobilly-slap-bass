@@ -1,10 +1,10 @@
 # Psychobilly Slap Bass 0.1.0 — implementation plan
 
-**Research revision:** 2026-11-22. Supersedes the original DSP/listening scope through D-032–D-040. The 20 existing frozen tests remain unchanged until S-005 performs the required contract reconciliation and explicit-red/refreeze procedure.
+**Research revision:** 2026-11-22, reconciled by S-005 through D-032–D-043. The affected contracts were explicitly unfrozen, proven red and refrozen.
 
-**Status: READY ONLY AFTER S-005 CONTRACT RECONCILIATION**  
+**Status: S-000/S-005 COMPLETE — STOP BEFORE S-010**  
 **Profiles:** `software`; `audio = true`; `software.deploys = false`  
-**Planning counts:** original baseline: 29 claims (24 verified, 4 corroborated, 1 non-load-bearing single-source); 20 frozen test functions / 249 clean-red cases (host 5, DSP 6, events 4, operational/security 2, performance 1, listening 2). Research revision: 19 steps, four planned additional tests (T-016/T-017/T-018/T-052), four human gates and four new risk entries. The original pre-mortem/assumption counts are historical; S-005 must rerun affected reviews and update these counts before implementation. Implementation review and adversarial breaks have not run. Mutation testing remains opted out (D-003).
+**Planning counts:** original baseline: 20 frozen test functions / 249 clean-red cases. Reconciled baseline: **24 frozen test functions / 267 clean-red cases** (host 5, DSP 9, events 4, operational/security 2, performance 1, listening 3), with no unexpected errors. Nineteen steps and four human gates. S-005 contract review and pre-mortem addendum are complete; no unresolved documentation Critical/High finding remains. Product contact quality, reference-audio availability, realtime performance and perceptual realism remain unproven and gated. Implementation and implementation-adversarial reviews have not run. Mutation testing remains opted out (D-003).
 
 This plan is self-contained and zero-question during execution except at its explicit human gates. Read `HANDOFF.md`, all D-records, `Psychobilly_Slap_Double_Bass_VST_Research.md` and the frozen tests before starting. Metrics establish regressions and physical plausibility only; they never establish perceptual realism. Artist/commercial recordings are private analysis targets, never redistributable evidence. The defining product risk is convincing woody fingerboard contact and articulation, not generic plucked-string sustain.
 
@@ -19,7 +19,7 @@ This plan is self-contained and zero-question during execution except at its exp
 
 ## S-005 — Research contract reconciliation and test re-freeze
 
-1. Record D-032–D-040 as the research-driven amendments. Keep the eight D-021 APVTS parameters unchanged; represent articulation through the D-023/D-024 performance/event contract after an explicit schema amendment. Version the event schema rather than smuggling unknown fields into schema 1.
+1. Record D-032–D-043 as the research-driven amendments and S-005 contract details. Keep the eight D-021 APVTS parameters unchanged; represent articulation through the D-023/D-024 performance/event contract after an explicit schema amendment. Version the event schema rather than smuggling unknown fields into schema 1.
 2. Add T-016 for amplitude-dependent downward pitch glide and static-versus-time-varying inharmonicity separation; T-017 for outward-pop/inward-slap gesture direction, bounded repeated collision, muted ghost output and same-string energy preservation; T-018 for independent pitch/slap buses and fitted body/pickup routing; T-052 for the sealed pluck/pop/slap articulation listening bundle.
 3. Unfreeze only affected tests/schemas. Prove every new or changed test explicitly red against the planning stub, restore all other hashes, regenerate `tests/FROZEN_MANIFEST.sha256`, and rerun cold-read plus affected pre-mortem review. Do not weaken any existing numeric gate.
 4. Update planning counts, traceability and reference/licensing evidence. If a redistribution-cleared isolated pop/slap corpus cannot be obtained, block the articulation listening gate; do not substitute ordinary-pluck references or publish commercial excerpts.
@@ -151,7 +151,7 @@ A second fresh reviewer challenges every A/D premise embodied in code. Fuzz host
 
 ## S-100 — Sealed listening evidence
 
-1. On a commit containing `[gate-evidence G-004]`, render the ten demos headlessly and create twelve start-window, one-second blind pairs from matched ordinary-pluck candidate/reference clips. Create a second sealed twelve-pair articulation bundle from redistribution-cleared isolated pluck/pop/slap/ghost references and matched candidates; use matched gesture, pitch, velocity and onset window, with four pairs per principal articulation family and balanced A/B assignment. RMS-match to −23 dBFS, fade cut ends and write 24-bit WAV; this pair-only matching does not normalise shipped demos.
+1. On a commit containing `[gate-evidence G-004]`, render the ten demos headlessly and create twelve start-window, one-second blind pairs from matched ordinary-pluck candidate/reference clips. Create a second sealed twelve-pair articulation bundle from redistribution-cleared isolated pluck/pop/slap/ghost references and matched candidates; use matched gesture, pitch, velocity and onset window, with three pairs each for pluck, pop, slap and ghost and balanced A/B assignment. RMS-match to −23 dBFS, fade cut ends and write 24-bit WAV; this pair-only matching does not normalise shipped demos.
 2. Use `scripts/make_blind_pairs.py` with a recorded cryptographically generated seed. Exactly six pairs place the reference on A and six on B, shuffled by that seed. Store a sealed base64 key separately from the listener-facing sheet; do not disclose either until answers are recorded.
 3. Include reference source/licence/checksum attribution, metric table, commit/environment provenance, `SHA256SUMS`, pair sheet and all ten demos. Push round N to orphan branch `evidence/G-004-round-N` using a dedicated non-cancellable concurrency group. Never include credentials.
 4. Provide the branch archive URL and per-file raw URLs; if private, state that and provide an accessible route. Run T-050/T-051 against the ordinary-pluck bundle and T-052 against the articulation bundle. Do not include commercial artist audio in either bundle.
