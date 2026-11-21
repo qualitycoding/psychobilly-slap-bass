@@ -50,3 +50,24 @@ G-004 retains the original twelve ordinary-pluck pairs and adds twelve sealed, b
 ## D-040 — Frozen contract migration
 
 S-005 precedes implementation. Add T-016/T-017/T-018/T-052 and amend only affected event/listening contracts through unfreeze, explicit red, implementation-independent review and refreeze. Existing numeric gates and the eight-parameter/ten-demo counts remain unless a separate D-record explicitly changes them. No implementation begins on the unreconciled contract.
+
+## D-041 — Event schema version 2 and articulation test freeze (S-005, 2026-11-22)
+
+The D-023/D-024 performance/event contract is amended before implementation, per D-040's
+unfreeze → explicit red → implementation-independent review → refreeze procedure:
+
+- Event documents declare `"schema": 2` in the header. Schema 1 documents remain valid and
+  mean the same events without gestures (ordinary pluck semantics, backwards compatible).
+- Schema 2 `note_on` events accept an optional `"gesture"` field with exactly one of
+  `pluck`, `pop`, `slap`, `ghost`. Unknown values, and a `gesture` key in a schema 1
+  document, are rejected (unknown field). Default gesture is `pluck`.
+- Articulation remains versioned performance/event data; the eight D-021 APVTS parameters are
+  unchanged and no host parameter is added.
+- New frozen tests added by this amendment: T-016 (SC-014, onset glide direction and
+  velocity separation per D-034), T-017 (SC-013, gesture direction, bounded repeated
+  collision, muted ghost output and same-string energy preservation per D-032/D-033),
+  T-018 (SC-015, independent pitch/slap buses and fitted body routing per D-035/D-036) and
+  T-052 (SC-016, schema-2 gesture validation and the sealed articulation listening bundle
+  contract per D-037/D-039). All four failed explicitly red (NotImplementedError from the
+  planning stub) before this freeze; no existing frozen test, numeric gate or the
+  eight-parameter/ten-demo counts were changed.
