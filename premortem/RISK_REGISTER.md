@@ -17,3 +17,8 @@ Severity is the unmitigated consequence; status reflects the converged plan. No 
 | R-011 | Python adapter misses host ABI behaviour | Host integration | Low | Medium | D-027 | Native pluginval plus measured adapter; residual Low |
 | R-012 | Python vulnerability feed misses native advisories | Supply chain | Low | Medium | C-029/S-090 | Separate exact native dependency review; residual Low |
 | R-013 | Store write access at intake may not survive until S-KNOW | External access | Medium | Medium | A-015/S-KNOW | S-000 recheck and protocol bundle fallback; residual Medium |
+
+| R-017 | Collision engine sounds metallic/click-like or becomes unstable | DSP | High | Possible | D-032/D-033 | One stable junction, offline reference case, T-017, qualitative override; block G-004 on woody-contact failure |
+| R-018 | Commercial artist references are mistaken for redistributable evidence | Legal/research | High | Possible | D-037/D-038 | Analysis-only private corpus, no commercial audio in Git/evidence, cleared isolated references required |
+| R-019 | Extra body/pickup/contact complexity misses realtime budget | Performance | Medium | Possible | D-033/D-035/D-036 | Complexity ladder, diagnostic buses, profile shipped path, ABX/MUSHRA pruning; G-005 if budget cannot hold |
+| R-020 | Ordinary-pluck numeric pass masks weak pop/slap realism | Validation | High | Possible | D-039 | Independent T-052 twelve-pair articulation gate plus demos and qualitative override |

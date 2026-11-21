@@ -26,13 +26,13 @@ No gate may be self-approved by the implementing agent. Each response is recorde
 
 **When:** after S-REVIEW and S-ADVERSARIAL, green CI on the pushed candidate, and S-100 construction of the sealed blind bundle.
 
-**Question:** “After listening to the twelve pairs and ten demos, how should the project proceed? You may request identification of the preferred clips after recording your choices.”
+**Question:** “After listening to the twelve ordinary-pluck pairs, twelve articulation pairs and ten demos, how should the project proceed? You may request identification of the preferred clips after recording your choices.”
 
 **Allowed responses:** `proceed`, `iterate: <notes>`, `proceed-with-rescope: <text>`, `stop`.
 
-**Numeric pass:** at most 8/12 correct identifications of the reference in a sealed round. This is only a necessary numeric condition: any qualitative report that the candidate lacks the intended slap attack, body, pitch clarity or musical usability overrides the numeric pass and requires `iterate`, rescope or stop. Ordinary-pluck reference pairs do not validate slap realism; the slap judgement is demos-only.
+**Numeric pass:** at most 8/12 correct identifications of the reference in **each** sealed set. This is only a necessary numeric condition for each set: any qualitative report that the candidate lacks convincing pluck/pop/slap identity, woody contact, ghost behaviour, rapid repetition, slap attack, body, pitch clarity or musical usability overrides the numeric pass and requires `iterate`, rescope or stop. Ordinary-pluck pairs do not validate slap realism; the articulation set and demos must independently support it. Commercial artist recordings never enter the bundle.
 
-**Iteration:** disclose the key only after choices are recorded, generate a new seed, correct the implementation without changing frozen tests except through the unfreeze/red/refreeze procedure, and repeat all affected CI/reviews. Maximum three disclosed rounds. A fourth requested round escalates to `proceed-with-rescope` or `stop`.
+**Iteration:** disclose both keys only after all choices are recorded, generate new seeds, correct the implementation without changing frozen tests except through the unfreeze/red/refreeze procedure, and repeat all affected CI/reviews. Maximum three disclosed rounds. A fourth requested round escalates to `proceed-with-rescope` or `stop`.
 
 ## G-005 — Performance, security or target rescope
 

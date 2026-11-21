@@ -22,7 +22,7 @@ Also controlling:
 4. `research/claims.json`, `research/SOURCES.md`, R6 spike records and `premortem/`.
 5. `plan/PLAN.md` in step order.
 
-D-001–D-027 are binding. D-070/D-071 are the reference/listening records. If identifiers appear non-sequential, do not renumber them.
+D-001–D-040 are binding, including the later D-028–D-031 records. D-070/D-071 are the original reference/listening records; D-037/D-039 add the artist-use and articulation-listening obligations. If identifiers appear non-sequential, do not renumber them. Read `Psychobilly_Slap_Double_Bass_VST_Research.md` before S-005.
 
 ## Frozen-test procedure
 
@@ -44,7 +44,7 @@ On Windows run `python scripts/verify_freeze.py` instead of `sha256sum`. Never m
 
 ## Execution and deviations
 
-- S-000 is first; S-RETRO and S-KNOW are last. Append one `EXECUTION_LOG.md` row per attempt.
+- S-000 is first, S-005 reconciles the research-driven contracts before implementation, and S-RETRO/S-KNOW are last. Append one `EXECUTION_LOG.md` row per attempt.
 - A failed prerequisite writes `BLOCKED.md` and halts delivery. Never improvise around missing access or an unverified dependency.
 - Record every version, mirror, timeout, package, config or workflow substitution in `DEVIATIONS.md`, with evidence and a lesson where it corrects a mistake.
 - All numeric gates read measured output. Adapters may not return hardcoded success. No renderer normalisation is permitted.

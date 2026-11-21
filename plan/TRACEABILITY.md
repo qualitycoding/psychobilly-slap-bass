@@ -54,3 +54,14 @@ Every row is a completion obligation. A step is not complete merely because its 
 | Oldest supported CMake | Additional `ubuntu-24.04` job with CMake 3.22.4 | None |
 
 All matrix jobs use `fail-fast: false`. The generation branch supplies planning evidence only; implementation results must come from the implementation branch and its CI runs.
+
+## Research revision additions
+
+| ID | Success criterion | Frozen verification after S-005 | Producing step(s) |
+|---|---|---|---|
+| SC-013 | Pluck, outward pop/rebound, inward slap and muted ghost gestures are explicit; same-string energy and collisions remain bounded. | T-017; event-schema tests | S-005, S-020, S-030 |
+| SC-014 | Hard gestures produce smooth bounded downward onset glide distinct from static inharmonicity; held-out features are reported. | T-016; calibration feature report | S-025, S-030, S-060 |
+| SC-015 | Compact body/pickup models feed independent pitch and slap buses without new host parameters or hidden normalisation. | T-018; T-002/T-023 | S-035, S-050 |
+| SC-016 | A sealed twelve-pair articulation bundle supplements the original pluck bundle and uses only redistribution-cleared audio. | T-052; G-004 record | S-005, S-025, S-100, S-LISTEN |
+
+New reverse mappings: T-016 → SC-014/D-034; T-017 → SC-013/D-032/D-033; T-018 → SC-015/D-035/D-036; T-052 → SC-016/D-037/D-039. Existing SC-001–SC-012 obligations remain binding.

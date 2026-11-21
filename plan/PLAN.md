@@ -1,10 +1,12 @@
 # Psychobilly Slap Bass 0.1.0 — implementation plan
 
-**Status: READY**  
-**Profiles:** `software`; `audio = true`; `software.deploys = false`  
-**Planning counts:** 29 claims (24 verified, 4 corroborated, 1 non-load-bearing single-source); 20 frozen test functions / 249 clean-red cases (host 5, DSP 6, events 4, operational/security 2, performance 1, listening 2); 16 steps; 4 human gates. Pre-mortem: 0 unresolved Critical/High; residual 4 Medium and 2 Low plus external store-access Medium. Assumption audit: 49 confirmed premises, 0 falsified, 5 unverifiable future/external items, all gated or risk-tracked. Planning review findings: 0 unresolved Critical/High; implementation review and adversarial breaks not yet run. Mutation testing: opted out (D-003).
+**Research revision:** 2026-11-22. Supersedes the original DSP/listening scope through D-032–D-040. The 20 existing frozen tests remain unchanged until S-005 performs the required contract reconciliation and explicit-red/refreeze procedure.
 
-This plan is self-contained and zero-question during execution except at its explicit human gates. Read `HANDOFF.md`, all D-records and the frozen tests before starting. Metrics establish regressions and physical plausibility only; they never establish perceptual realism.
+**Status: READY ONLY AFTER S-005 CONTRACT RECONCILIATION**  
+**Profiles:** `software`; `audio = true`; `software.deploys = false`  
+**Planning counts:** original baseline: 29 claims (24 verified, 4 corroborated, 1 non-load-bearing single-source); 20 frozen test functions / 249 clean-red cases (host 5, DSP 6, events 4, operational/security 2, performance 1, listening 2). Research revision: 19 steps, four planned additional tests (T-016/T-017/T-018/T-052), four human gates and four new risk entries. The original pre-mortem/assumption counts are historical; S-005 must rerun affected reviews and update these counts before implementation. Implementation review and adversarial breaks have not run. Mutation testing remains opted out (D-003).
+
+This plan is self-contained and zero-question during execution except at its explicit human gates. Read `HANDOFF.md`, all D-records, `Psychobilly_Slap_Double_Bass_VST_Research.md` and the frozen tests before starting. Metrics establish regressions and physical plausibility only; they never establish perceptual realism. Artist/commercial recordings are private analysis targets, never redistributable evidence. The defining product risk is convincing woody fingerboard contact and articulation, not generic plucked-string sustain.
 
 ## S-000 — Environment and access verification
 
@@ -14,6 +16,15 @@ This plan is self-contained and zero-question during execution except at its exp
 4. Start `EXECUTION_LOG.md`; every subsequent attempt appends UTC time, step, attempt, pass/fail/blocked, commit and note.
 
 **Done when:** all checks pass and the log exists. **On failure:** write `BLOCKED.md` and halt before delivery work.
+
+## S-005 — Research contract reconciliation and test re-freeze
+
+1. Record D-032–D-040 as the research-driven amendments. Keep the eight D-021 APVTS parameters unchanged; represent articulation through the D-023/D-024 performance/event contract after an explicit schema amendment. Version the event schema rather than smuggling unknown fields into schema 1.
+2. Add T-016 for amplitude-dependent downward pitch glide and static-versus-time-varying inharmonicity separation; T-017 for outward-pop/inward-slap gesture direction, bounded repeated collision, muted ghost output and same-string energy preservation; T-018 for independent pitch/slap buses and fitted body/pickup routing; T-052 for the sealed pluck/pop/slap articulation listening bundle.
+3. Unfreeze only affected tests/schemas. Prove every new or changed test explicitly red against the planning stub, restore all other hashes, regenerate `tests/FROZEN_MANIFEST.sha256`, and rerun cold-read plus affected pre-mortem review. Do not weaken any existing numeric gate.
+4. Update planning counts, traceability and reference/licensing evidence. If a redistribution-cleared isolated pop/slap corpus cannot be obtained, block the articulation listening gate; do not substitute ordinary-pluck references or publish commercial excerpts.
+
+**Done when:** the revised contract has clean-red evidence and a new manifest, all unchanged tests still pass their original checks, and the reference route is legally and technically reachable. **On failure:** write `BLOCKED.md`; no DSP implementation starts.
 
 ## S-010 — Build skeleton, licensing and adapter boundary
 
@@ -26,22 +37,41 @@ This plan is self-contained and zero-question during execution except at its exp
 
 ## S-020 — MIDI, state and voice host integration
 
-1. Implement D-023 MIDI parsing, sample-accurate note/automation/pitch-bend ordering, safe note filtering and zero-velocity note-on handling.
+1. Implement D-023 MIDI parsing and the D-032 articulation mapping, sample-accurate note/articulation/automation/pitch-bend ordering, safe note filtering and zero-velocity note-on handling. Keep articulation out of the eight-parameter APVTS contract.
 2. Implement D-022 canonical XML state with D-012 size/depth/content validation. Invalid input leaves active audio unchanged; no exceptions cross the host boundary.
 3. Allocate eight voice slots and all delay/coupling storage at preparation. Implement D-019 quietest-then-oldest stealing, same-note retrigger and 10 ms crossfade. No allocation, lock, file, logging or network call in `processBlock`.
 4. Run T-003–T-005 and lifecycle portions of T-011.
 
 **Done when:** host/state/MIDI tests pass under repeated prepare/reset/reconfigure cycles.
 
+## S-025 — Calibration corpus and reference targets
+
+1. Build a private analysis corpus containing isolated soft/hard pluck, pop, slap, muted/ghost hit, rapid same-string repetition and rhythmic patterns. Where possible record bridge piezo, fingerboard/contact and body/microphone paths separately. Store performer/source consent, licence, checksums and redistribution rights per item.
+2. Add analysis-only targets for Steve Whitehouse/Frenzy, Oliver Baroni/Hillbilly Moon Explosion, Ray Thompson-era and Graeme Grant-era Demented Are Go. Do not infer gear or settings from mixes. Commercial audio remains outside Git history and public evidence; only derived non-audio measurements and source citations may be committed.
+3. Extract pitch/glide, per-partial frequency and T60, onset/contact timing, contact-event count, noise/tone ratio and multi-resolution spectra. Split calibration and held-out gestures. Obtain or record redistribution-cleared isolated pluck/pop/slap references for G-004.
+4. Produce `research/calibration/manifest.json`, feature tables and fit/holdout assignments. No artist preset may claim measured reproduction before fitting and listening evidence exist.
+
+**Done when:** each target is traceable, private/commercial material is excluded from deliverables, and cleared articulation references are available or the plan is blocked at S-005.
+
 ## S-030 — String, excitation and body DSP
 
-1. Translate the D-004/D-016 planning candidate into four extended digital-waveguide strings: fractional delay, frequency-dependent loop damping, pluck filtering and bounded fingerboard collision/contact excitation.
-2. Add separate body/radiation filtering, attack and mechanical noise, deterministic seeded variation and D-019 sympathetic input from exactly the other seven outputs with radius `0.105`.
+1. Translate the D-004/D-016 candidate into four **bidirectional** digital-waveguide strings: fractional delay, frequency-dependent loop damping, optional measured stiffness dispersion, pluck filtering and explicit outward-pluck/outward-pop/inward-slap/muted-ghost gestures. Start with one stable nonlinear scattering/contact junction, then enable multiple junctions only if T-017 and blind comparison justify them.
+2. Add smooth amplitude-dependent downward onset pitch glide with per-gesture depth/time controls, keeping it distinct from static stiffness inharmonicity. Preserve energy on same-string retrigger unless damped by the gesture. Add compact fitted modal/biquad or short-FIR body/radiation filtering, attack/mechanical residuals, deterministic seeded variation and D-019 sympathetic input from exactly the other seven outputs with radius `0.105`.
 3. Implement all D-021 mappings, radiation cutoff `350 + 350*string_tension` Hz, fixed shipped-path mix scale `0.24` and D-021 output gain. No renderer normalisation or hidden safety gain may alter the measured shipped path.
 4. Sanitise coefficients at rate changes and bound nonlinear/delay states. Denormal prevention must not mute valid low-level output.
-5. Run T-010, T-012, T-013 and T-015; preserve failing diagnostic output rather than tuning the analyser around it.
+5. Run T-010, T-012, T-013 and T-015 plus new T-016/T-017. Preserve failing diagnostic output rather than tuning the analyser around it. Validate one-junction behaviour against at least one offline distributed-contact reference case before adding complexity.
 
-**Done when:** known answers, finite/extreme-corner limits and monotonic control checks pass at every frozen rate/note/velocity.
+**Done when:** known answers, finite/extreme-corner limits, monotonic controls, glide direction/decay, collision/ghost behaviour and held-out feature checks pass at every frozen rate/note/velocity.
+
+## S-035 — Pickup, pitch/slap buses and output calibration
+
+1. Implement separate **pitch** and **slap/contact** buses. Bridge force drives body/pickup processing; collision force and hand/fingerboard residual drive the slap bus. Expose existing D-021 controls through these buses without adding host parameters.
+2. Add selectable internal piezo, magnetic and microphone/body models. Piezo load/capacitance forms a documented high-pass starting model; magnetic pickup uses position/velocity response; microphone uses body/radiation. Keep advanced electrical constants out of the main UI.
+3. Give pitch and slap buses independent internal EQ/dynamics before optional saturation/amp/cabinet and safety limiting. Preserve transient/ghost distinction and prevent nonlinear aliasing; any oversampling must be profiled in S-040.
+4. Run T-018 and the full DSP/event suite. Fit output processing only after string/collision calibration, and retain an unprocessed diagnostic output for tests.
+
+**Done when:** routing is measurable, each model is finite and deterministic, and pitch-versus-percussion balance remains controllable without renderer normalisation.
+
 
 ## S-040 — Voice lifecycle and performance instrumentation
 
@@ -64,19 +94,19 @@ This plan is self-contained and zero-question during execution except at its exp
 ## S-060 — Analysis and reproducible demo corpus
 
 1. Implement the frozen analysers in `stubs/psb_contract.py`: matched-note pitch conditioning only for T-014, unconstrained known answers, onset, exponential T60 and spectral centroid. Never derive a pass from an expected value returned by the synth itself.
-2. Run ordinary-pluck comparison against all seven D-070 CC0 references and report each result plus the frozen spread bound. Retain the decay mismatch as diagnostic, not realism evidence.
+2. Run ordinary-pluck comparison against all seven D-070 CC0 references and report each result plus the frozen spread bound. Retain the decay mismatch as diagnostic, not realism evidence. Add held-out pluck/pop/slap feature comparisons for glide, per-partial T60, contact timing/count, noise/tone ratio and multi-resolution spectra; these are fitting diagnostics, not automatic realism passes.
 3. Add these ten D-024 JSONL files under `demos/events/` and render the matching WAV/JSON files at 48 kHz:
    - `demo-01-short-melody`: walking/psychobilly melodic phrase across the four strings.
    - `demo-02-fast-passage`: dense sixteenth-note alternate-string figure with retrigger/stealing stress.
    - `demo-03-dynamics`: matched phrase at softest through loudest velocities.
    - `demo-04-slow-sustain`: long sustained notes, note-off and sympathetic decay.
-   - `demo-05-pluck-slap`: fixed phrase sweeping `pluck_slap` through all five frozen values.
+   - `demo-05-pluck-slap`: matched pluck/pop/slap phrase, muted ghost hits and rapid repetitions, plus the existing five `pluck_slap` values under the amended event contract.
    - `demo-06-brightness-body`: separate `slap_brightness` and `body_resonance` sweeps.
    - `demo-07-tension-sustain`: separate `string_tension` and `sustain` sweeps with pitch-bend centre/range checks.
    - `demo-08-noises-output`: separate attack/mechanical noise and output-level sweeps.
    - `demo-09-low-register`: lowest supported notes, open-string-like resonance and collision-heavy playing.
    - `demo-10-high-register`: highest supported notes, fast release and deliberately exposed weak slap/collision mode.
-4. Assert ten events, ten WAVs and ten metadata records, hashes and provenance. Run T-014 and T-050/T-051.
+4. Assert ten events, ten WAVs and ten metadata records, hashes and provenance. Run T-014 and T-050/T-051; include the revised articulation content in T-052 and human review without changing the ten-demo count.
 
 **Done when:** every metric passes and the complete demo corpus is reproducible from text events.
 
@@ -121,18 +151,18 @@ A second fresh reviewer challenges every A/D premise embodied in code. Fuzz host
 
 ## S-100 — Sealed listening evidence
 
-1. On a commit containing `[gate-evidence G-004]`, render the ten demos headlessly and create twelve start-window, one-second blind pairs from matched ordinary-pluck candidate/reference clips. RMS-match to −23 dBFS, fade cut ends and write 24-bit WAV; this pair-only matching does not normalise shipped demos.
+1. On a commit containing `[gate-evidence G-004]`, render the ten demos headlessly and create twelve start-window, one-second blind pairs from matched ordinary-pluck candidate/reference clips. Create a second sealed twelve-pair articulation bundle from redistribution-cleared isolated pluck/pop/slap/ghost references and matched candidates; use matched gesture, pitch, velocity and onset window, with four pairs per principal articulation family and balanced A/B assignment. RMS-match to −23 dBFS, fade cut ends and write 24-bit WAV; this pair-only matching does not normalise shipped demos.
 2. Use `scripts/make_blind_pairs.py` with a recorded cryptographically generated seed. Exactly six pairs place the reference on A and six on B, shuffled by that seed. Store a sealed base64 key separately from the listener-facing sheet; do not disclose either until answers are recorded.
 3. Include reference source/licence/checksum attribution, metric table, commit/environment provenance, `SHA256SUMS`, pair sheet and all ten demos. Push round N to orphan branch `evidence/G-004-round-N` using a dedicated non-cancellable concurrency group. Never include credentials.
-4. Provide the branch archive URL and per-file raw URLs; if private, state that and provide an accessible route. Run T-050/T-051 against the actual bundle.
+4. Provide the branch archive URL and per-file raw URLs; if private, state that and provide an accessible route. Run T-050/T-051 against the ordinary-pluck bundle and T-052 against the articulation bundle. Do not include commercial artist audio in either bundle.
 
 **Done when:** the sealed bundle is reachable, balanced, complete and hash-verified. No realism claim is made before listening.
 
 ## S-LISTEN — Human listening gate G-004
 
-Ask the user to play pairs in order on their own headphones, A then B once each, and record which side is the reference. Ask for the twelve letters, whether the demos sound realistic, which sound off and how, and specifically whether slap attack, low register, high register, fast passages and control sweeps are musically convincing.
+Ask the user to play both sealed sets in order on their own headphones, A then B once each, and record which side is the reference. Ask for the twelve ordinary-pluck letters and twelve articulation letters separately, whether the demos sound realistic, which sound off and how, and specifically whether pluck/pop/slap identity, woody contact, ghost hits, rapid repetition, slap attack, low register, high register, fast passages and control sweeps are musically convincing.
 
-Record the response verbatim. Only then decode the key with `scripts/score_blind.py`; record score, one-sided p-value, side bias, seed and commit. Numeric pass is no more than 8/12 correct, but any substantive qualitative shortfall overrides it. Ordinary-pluck pairs do not establish slap realism; slap is judged from the demos.
+Record the response verbatim. Only then decode each key with `scripts/score_blind.py`; record score, one-sided p-value, side bias, seed and commit. Each set requires no more than 8/12 correct as its necessary numeric condition, but any substantive qualitative shortfall overrides it. Ordinary-pluck pairs still do not establish slap realism; the articulation bundle and demos must independently support that judgement. Optional ABX/MUSHRA comparisons may prune costly collision, dispersion or residual features, but cannot replace G-004.
 
 On `iterate`, analyse the listener-identified region/mechanism, make one general targeted change per observed difference, rerun metrics/reviews and build a newly seeded bundle. Do not tune per-note constants to these clips. Maximum three disclosed rounds; then require `proceed-with-rescope` or `stop`. `proceed` completes audio validation only for the evidence actually heard.
 
