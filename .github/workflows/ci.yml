@@ -132,9 +132,9 @@ jobs:
           for extra in sorted(Path("artifacts/pluginval").rglob("*")) if Path("artifacts/pluginval").is_dir() else []:
               if extra.is_file() and extra.stat().st_size < 200_000:
                   log += "\n--- " + extra.as_posix() + " ---\n" + extra.read_text(errors="ignore")
-          print(log[-6000:])
+          print(log[:100000])
           assert proc.returncode == 0, proc.returncode
-          assert "Test finished" in log or "finished" in log.lower(), "validator did not complete"
+          assert "SUCCESS" in log, "validator did not succeed"
           assert "failure" not in log.lower().replace("0 failures", ""), "validator reported failures"
           PY
 
@@ -179,6 +179,7 @@ jobs:
           test -s artifacts/environment.json
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
         with:
           name: evidence-${{ matrix.runner }}
           path: artifacts/
