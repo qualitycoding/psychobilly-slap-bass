@@ -104,3 +104,15 @@ samples), not once per sample. The first implementation coded the per-sample los
 sub-audio floor that broke T-013 sustain monotonicity. Corrected to
 `loopGain = 10^(-3*nInt/(t60*fs))`, recomputed when the integer delay length changes
 (glide). T60 targets now measured within ~8% across the sustain sweep.
+
+## D-045 — delay-line state ceiling (2026-11-22)
+Sympathetic coupling (D-019, radius 0.105) injects other voices' outputs into
+each delay line at full amplitude. The correlated 8-voice mode therefore has
+closed-loop gain ~loopGain + 0.105*7 > 1: clustered high notes held on shared
+voices grew exponentially and emitted Infs (found via pluginval "Infs found
+in buffer", 20/600 tests, macOS; reproduced on x86 with a note/gesture/velocity
+sweep). Fix: clamp the delay-line state to |x| <= 8 (kStringStateCeiling) —
+a finite string excursion bound, engaging only in runaway; normal renders stay
+~1e0 internally and all 24 frozen tests pass unchanged. D-019 radius and all
+coupling semantics are untouched. Regression harness:
+scripts/check_engine_finiteness.py (runs in CI after the frozen suite).
