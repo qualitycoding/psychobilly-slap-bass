@@ -22,7 +22,9 @@ jobs:
             generator: "Ninja"
             pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_linux.zip"
             pluginval_sha: "c01c49d8063965c4c2dea8324468336768f5c9139e0b1caebde14c2400b55352"
-          - runner: windows-2025
+          # windows-2025 migrated to Visual Studio 2026 in June 2026; VS 2022
+          # (generator "Visual Studio 17 2022") now lives on windows-2022.
+          - runner: windows-2022
             generator: "Visual Studio 17 2022"
             arch: "-A x64"
             pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_windows.zip"
@@ -82,7 +84,9 @@ jobs:
         shell: pwsh
 
       - name: pip audit
-        run: python -m pip_audit -r requirements.txt --no-deps --disable-pip --strict --format json --output artifacts/pip-audit.json
+        run: |
+          mkdir -p artifacts
+          python -m pip_audit -r requirements.txt --no-deps --disable-pip --strict --format json --output artifacts/pip-audit.json
 
       - name: repository audit
         run: python3 scripts/audit_repository.py --output artifacts/repository-audit.json
@@ -173,6 +177,10 @@ jobs:
           python-version: "3.12"
       - name: install pinned oldest cmake
         run: python3 -m pip install --index-url https://pypi.org/simple cmake==3.22.4 ninja
+      - name: juce linux packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.1-dev libglu1-mesa-dev mesa-common-dev
       - name: configure build test
         run: |
           cmake --version

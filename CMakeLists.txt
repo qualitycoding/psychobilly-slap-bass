@@ -17,6 +17,9 @@ endif()
 
 add_library(psb_engine STATIC src/psb/engine.cpp)
 target_include_directories(psb_engine PUBLIC src)
+# The VST3 module links psb_engine into a shared object; static archives must
+# be PIC or the Linux link fails with R_X86_64_PC32 relocations.
+set_target_properties(psb_engine PROPERTIES POSITION_INDEPENDENT_CODE ON)
 if(MSVC)
   target_compile_options(psb_engine PRIVATE /fp:precise /W4)
 else()
