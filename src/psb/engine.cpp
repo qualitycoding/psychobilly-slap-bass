@@ -30,6 +30,14 @@ namespace psb
 namespace
 {
 constexpr double kTwoPi = 6.28318530717958647692;
+// Finite string excursion ceiling. The D-019 sympathetic coupling injects
+// other voices' outputs into the delay line at full amplitude, so the
+// correlated 8-voice mode has closed-loop gain ~loopGain + 0.105*7 > 1 and
+// can run away exponentially (found via pluginval "Infs in buffer" on
+// clustered high notes). Real strings saturate at finite excursion; clamping
+// the delay-line state bounds every derived signal without touching normal
+// rendering (internal levels stay ~1e0, far below 8).
+constexpr double kStringStateCeiling = 8.0;
 
 inline double midiHz(double note) { return 440.0 * std::pow(2.0, (note - 69.0) / 12.0); }
 inline double sanitise_(double x) { return std::abs(x) < 1e-300 ? 0.0 : x; }
@@ -222,7 +230,8 @@ struct Engine::WaveguideString
             collisionCooldown = std::max(8, nInt / 2);
         }
 
-        buf[w] = sanitise_(v + sympatheticIn);
+        buf[w] = sanitise_(std::clamp(v + sympatheticIn,
+                                      -kStringStateCeiling, kStringStateCeiling));
         const double out = buf[(w - nInt / 2 + 2 * kMaxDelay) % kMaxDelay];
         w = (w + 1) % kMaxDelay;
         return sanitise_(out);

@@ -89,6 +89,9 @@ jobs:
       - name: frozen suite
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
 
+      - name: engine finiteness sweep
+        run: python3 scripts/check_engine_finiteness.py
+
       - name: freeze manifest
         if: runner.os == 'Windows'
         run: python scripts/verify_freeze.py
