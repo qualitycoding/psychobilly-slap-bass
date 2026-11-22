@@ -2,7 +2,7 @@
 # Pure C++20 headless engine and tools build everywhere; the VST3 target
 # additionally requires the pinned JUCE 9.0.5 FetchContent checkout.
 cmake_minimum_required(VERSION 3.22)
-project(PsychobillySlapBass VERSION 0.1.0 LANGUAGES CXX)
+project(PsychobillySlapBass VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
