@@ -147,7 +147,7 @@ jobs:
           import json, platform, subprocess
           from pathlib import Path
           candidates = [p for p in Path("build").rglob("psychobilly-render*")
-                        if p.is_file() and p.suffix not in (".pdb", ".lib", ".exp")]
+                        if p.is_file() and p.suffix in (".exe", "")]
           print("bench candidates:", [str(c) for c in candidates])
           exe = next(iter(candidates))
           exe.chmod(0o755)
