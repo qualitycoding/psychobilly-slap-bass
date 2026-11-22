@@ -496,7 +496,12 @@ def performance(workload: dict[str, Any]) -> dict[str, Any]:
     runner = _runner_label()
     lock = _environment_lock_hash()
     key = f"{runner}:{lock}"
-    baseline_path = ROOT / "performance" / "baselines.json"
+    # Baselines are per-runner calibration state, not portable reference data:
+    # a baseline recorded on one machine is meaningless on a differently
+    # provisioned runner. CI overrides this to a cached, runner-local path so
+    # the first run on a runner records and later runs compare against it.
+    default_path = ROOT / "performance" / "baselines.json"
+    baseline_path = Path(os.environ.get("PSB_BASELINES_PATH", str(default_path)))
     baselines: dict[str, Any] = {}
     if baseline_path.is_file():
         baselines = json.loads(baseline_path.read_text())

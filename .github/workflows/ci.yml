@@ -34,8 +34,19 @@ jobs:
             pluginval_url: "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_macos.zip"
             pluginval_sha: "3c4c533bda0c5059eea3ddaea752d757ee2025041f0f47e6bcb0e87f6082b29f"
     runs-on: ${{ matrix.runner }}
+    env:
+      # T-040 (D-018) calibrates per runner: first run on a runner records a
+      # baseline, later runs compare against it. The store is cached per
+      # runner label, never committed — machine A's RTF is not machine B's.
+      PSB_BASELINES_PATH: ${{ github.workspace }}/.psb-baselines/baselines.json
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: per-runner performance baselines
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: .psb-baselines/
+          key: psb-baselines-${{ matrix.runner }}-${{ hashFiles('environment-lock.txt') }}
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
@@ -170,8 +181,15 @@ jobs:
 
   cmake-lower-bound:
     runs-on: ubuntu-24.04
+    env:
+      PSB_BASELINES_PATH: ${{ github.workspace }}/.psb-baselines/baselines.json
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: per-runner performance baselines
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: .psb-baselines/
+          key: psb-baselines-lower-bound-${{ hashFiles('environment-lock.txt') }}
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: "3.12"

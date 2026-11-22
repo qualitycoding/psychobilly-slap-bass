@@ -1,0 +1,4 @@
+# Byte-stable checkouts: no line-ending conversion anywhere. Frozen-test
+# hashes (tests/FROZEN_MANIFEST.sha256) are computed over working-tree bytes,
+# so CRLF conversion on Windows would break verification.
+* -text

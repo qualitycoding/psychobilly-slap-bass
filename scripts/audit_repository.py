@@ -39,6 +39,8 @@ CODE_NAMES = {"CMakeLists.txt"}
 
 def scan_text(path: Path, text: str, findings: list[dict]) -> None:
     rel = str(path.relative_to(ROOT))
+    if rel == "scripts/audit_repository.py":
+        return  # the scanner's own source mentions every pattern it hunts
     is_code = path.suffix in CODE_SUFFIXES or path.name in CODE_NAMES
     for lineno, line in enumerate(text.splitlines(), 1):
         for name, pattern in SECRET_PATTERNS.items():
@@ -48,7 +50,10 @@ def scan_text(path: Path, text: str, findings: list[dict]) -> None:
             continue  # network/telemetry/deserialization scans target code only
         if UNSAFE_URL.search(line):
             findings.append({"file": rel, "line": lineno, "kind": "unsafe:credential-url"})
-        if NETWORK_CALLS.search(line) and not rel.startswith(("scripts/audit", "stubs/psb_contract")):
+        # Workflow heredocs fetch pinned CI tooling (e.g. pluginval with a
+        # verified sha256); they are not product network features.
+        if NETWORK_CALLS.search(line) and not rel.startswith(
+                ("scripts/audit", "stubs/psb_contract", ".github/workflows/")):
             findings.append({"file": rel, "line": lineno, "kind": "network-call"})
         if TELEMETRY.search(line):
             findings.append({"file": rel, "line": lineno, "kind": "telemetry"})
