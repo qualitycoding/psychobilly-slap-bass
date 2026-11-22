@@ -101,6 +101,8 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2) + "\n")
     print(f"audit: {len(findings)} findings, {len(history_findings)} history findings -> {out}")
+    for f in findings:
+        print(f"finding: {f['file']}:{f['line']} {f['kind']}")
     return 0 if report["ok"] else 1
 
 

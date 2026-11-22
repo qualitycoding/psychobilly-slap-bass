@@ -118,7 +118,7 @@ jobs:
           exe.chmod(0o755)
           if platform.system() == "Darwin":
               subprocess.run(["xattr", "-d", "com.apple.quarantine", str(exe)], check=False)
-          vst3 = next(p for p in Path("build").rglob("*.vst3"), None)
+          vst3 = next((p for p in Path("build").rglob("*.vst3")), None)
           assert vst3 is not None, "vst3 bundle not found"
           cmd = [str(exe), "--validate", str(vst3), "--strictness-level", "7",
                  "--sample-rates", "44100,48000,88200,96000",
