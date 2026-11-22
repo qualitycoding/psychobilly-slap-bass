@@ -146,8 +146,10 @@ jobs:
           python3 - <<'PY'
           import json, platform, subprocess
           from pathlib import Path
-          exe = next(p for p in Path("build").rglob("psychobilly-render*")
-                     if p.is_file() and p.suffix not in (".pdb", ".lib", ".exp"))
+          candidates = [p for p in Path("build").rglob("psychobilly-render*")
+                        if p.is_file() and p.suffix not in (".pdb", ".lib", ".exp")]
+          print("bench candidates:", [str(c) for c in candidates])
+          exe = next(iter(candidates))
           exe.chmod(0o755)
           proc = subprocess.run([str(exe), "bench"], capture_output=True, text=True)
           Path("artifacts/bench.log").write_text(proc.stdout + proc.stderr)
