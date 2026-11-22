@@ -128,8 +128,12 @@ jobs:
                  "--output-filename", "pluginval-primary", "--verbose"]
           proc = subprocess.run(cmd, capture_output=True, text=True)
           Path("artifacts/pluginval-primary.log").write_text(proc.stdout + "\n" + proc.stderr)
+          log = proc.stdout + "\n" + proc.stderr
+          for extra in sorted(Path("artifacts/pluginval").rglob("*")) if Path("artifacts/pluginval").is_dir() else []:
+              if extra.is_file() and extra.stat().st_size < 200_000:
+                  log += "\n--- " + extra.as_posix() + " ---\n" + extra.read_text(errors="ignore")
+          print(log[-6000:])
           assert proc.returncode == 0, proc.returncode
-          log = proc.stdout + proc.stderr
           assert "Test finished" in log or "finished" in log.lower(), "validator did not complete"
           assert "failure" not in log.lower().replace("0 failures", ""), "validator reported failures"
           PY

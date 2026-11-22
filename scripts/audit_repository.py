@@ -38,7 +38,7 @@ CODE_NAMES = {"CMakeLists.txt"}
 
 
 def scan_text(path: Path, text: str, findings: list[dict]) -> None:
-    rel = str(path.relative_to(ROOT))
+    rel = path.relative_to(ROOT).as_posix()  # always '/' — CI runs on Windows too
     if rel == "scripts/audit_repository.py":
         return  # the scanner's own source mentions every pattern it hunts
     is_code = path.suffix in CODE_SUFFIXES or path.name in CODE_NAMES

@@ -495,7 +495,12 @@ def performance(workload: dict[str, Any]) -> dict[str, Any]:
 
     runner = _runner_label()
     lock = _environment_lock_hash()
-    key = f"{runner}:{lock}"
+    # Machine identity in the key: hosted runners sharing one label are
+    # differently provisioned hosts, and RTF is only comparable on the same
+    # machine. First sight of a machine records; revisits compare. Locally
+    # this gives real cross-run regression detection on a stable host.
+    machine = os.environ.get("RUNNER_NAME") or platform.node() or "unknown"
+    key = f"{runner}:{lock}:{machine}"
     # Baselines are per-runner calibration state, not portable reference data:
     # a baseline recorded on one machine is meaningless on a differently
     # provisioned runner. CI overrides this to a cached, runner-local path so
